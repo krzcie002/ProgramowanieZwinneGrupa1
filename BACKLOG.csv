@@ -1,0 +1,17 @@
+
+id,tytuł,opis,story_points,priorytet,status,akceptacja
+US1,Rejestr wydatku,Jako użytkownik chcę dodać wydatek aby go śledzić,3,MUST,Todo,Po dodaniu rekord widoczny w liście
+US2,Lista wydatków,Jako użytkownik chcę zobaczyć listę ostatnich wydatków,3,MUST,Todo,Lista pokazuje kategorię/kwotę/datę
+US3,Podsumowanie 30 dni,Jako użytkownik chcę zobaczyć sumę i liczbę wydatków za 30 dni,5,MUST,Todo,Suma i liczba zgodne z danymi
+US4,Eksport CSV,Jako użytkownik chcę eksportować wydatki do CSV,3,SHOULD,Todo,Pobiera plik CSV z nagłówkami
+US5,Walidacja danych,Jako użytkownik chcę walidację pól aby unikać błędów,2,SHOULD,Todo,Błędne dane blokują zapis
+US6,Obsługa kategorii,Jako użytkownik chcę przypisać kategorię do wydatku,2,COULD,Todo,Kategorie zapisują się i filtrują
+US7,Edycja wydatku,Jako użytkownik chcę edytować istniejący wydatek,3,COULD,Todo,Po edycji dane są zapisane i widoczne na liście
+US8,Usunięcie wydatku,Jako użytkownik chcę usuwać istniejący wydatek,2,COULD,Todo,Po usunięciu rekord znika z listy
+US9,Sortowanie wydatków,Jako użytkownik chcę posortować wydatki na przykład po dacie dodania/kwocie,3,COULD,Todo,Lista zmienia kolejność po sortowaniu
+US10,Dodanie wydatków stałych,Jako użytkownik mogę jednym kliknięciem dodać do listy wydatki stałe - przykładowo rachunek za prąd,3,COULD,Todo,Istnieje interfejs do szybkiego dodawania wydatków stałych
+TECH1,Pipeline CI,Konfiguracja testów+lint w CI,2,MUST,Doing,CI przechodzi zielono
+TECH2,Analiza jakości,Integracja SonarQube,3,COULD,Todo,Raport metryk jakości
+TECH3,Logging,Dodanie prostego logowania błędów i ostrzeżeń,2,COULD,Todo,Błędy zapisują się w lokalnym logu/konsoli
+TECH4,Bezpieczeństwo,System jest zabezpieczony przed włamaniami,3,SHOULD,Todo,Przechodzi testy bezpieczeństwa
+TECH5,Wydajność,Czas odpowiedzi systemu nie powinien przekraczać 1 sekundy,1,MUST,Todo,Pomiar czasu w teście nie przekracza 1 sekundy
