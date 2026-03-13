@@ -8,6 +8,7 @@ STU6,Dodawanie i usuwanie zadań w projekcie,Student może dodawać i usuwać za
 PRO1,Tworzenie projektów,Prowadzący może tworzyć nowy projekt i przypisać do niego studentów,5,MUST,Todo,Nowy projekt w bazie danych widoczny na liście projektów
 PRO2,Widok listy stworzonych projektów,Prowadzący widzi listę stworzonych przez siebie projektów i ich podzadania,5,MUST,Todo,Widoczna lista projektów z podzadaniami
 PRO3,Edycja projektów,Prowadzący może edytować utworzony przez siebie projekt,5,MUST,Todo,Zapis zmian w bazie danych
+ADM1,Widok wszystkich projektów i zadań,Admin ma dostęp do wszystkich projektów w liście,5,MUST,Todo,Widoczna lista
 US4,Eksport CSV,Jako użytkownik chcę eksportować wydatki do CSV,3,SHOULD,Todo,Pobiera plik CSV z nagłówkami
 US5,Walidacja danych,Jako użytkownik chcę walidację pól aby unikać błędów,2,SHOULD,Todo,Błędne dane blokują zapis
 US6,Obsługa kategorii,Jako użytkownik chcę przypisać kategorię do wydatku,2,COULD,Todo,Kategorie zapisują się i filtrują
