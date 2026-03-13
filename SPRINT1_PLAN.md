@@ -2,18 +2,20 @@
 # Sprint 1 — Plan (2 tygodnie)
 
 ## Cel sprintu
-Dostarczyć MVP: dodawanie wydatków, lista, podsumowanie 30 dni, zielone CI.
+Dostarczyć gotowy system autentykacji i autoryzacji użytkownika z podziałem na odpowiednie role i z implementacją bazy danych. 
 
 ## Zakres (wybrane z BACKLOG.csv)
-- US1, US2, US3, TECH1, TECH5
+//TODO
 
 ## Zadania techniczne
-- Inicjalizacja repo i struktury
-- Implementacja modelu i prostego storage (in-memory + zapis JSON/CSV)
-- Endpointy: POST /expenses, GET /expenses, GET /summary
-- Testy jednostkowe do kluczowych funkcji
-- Konfiguracja CI (pytest, flake8, black, bandit)
-- Testy wydajnościowe
+Stworzyć bazę danych, wszystkie wymagane tabele i relacje,
+Połączyć bazę danych z serwerem backend i utworzyć wszystkie potrzebne klasy do połączenia.
+Strona logowania, rejestracji w frontendzie,
+Obsługa logowania, rejestracji  w backendzie.
+Testy jednostkowe,
+Testy integracyjne całości,
+
+
 
 ## Definition of Done
 - Testy zielone (>= 80% coverage mile widziane)
