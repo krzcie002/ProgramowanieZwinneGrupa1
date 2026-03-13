@@ -1,7 +1,7 @@
 
 id,tytuł,opis,story_points,priorytet,status,akceptacja
-US1,Rejestr wydatku,Jako użytkownik chcę dodać wydatek aby go śledzić,3,MUST,Todo,Po dodaniu rekord widoczny w liście
-US2,Lista wydatków,Jako użytkownik chcę zobaczyć listę ostatnich wydatków,3,MUST,Todo,Lista pokazuje kategorię/kwotę/datę
+US1,Rejestracja studenta,Student może stworzyć nowe konto,3,MUST,Todo,Po rejestracji nowe konto widoczne w bazie.
+US2,Logowanie studenta,Student może logować się na swoje konto,3,MUST,Todo,Student jest autoryzowany.
 US3,Podsumowanie 30 dni,Jako użytkownik chcę zobaczyć sumę i liczbę wydatków za 30 dni,5,MUST,Todo,Suma i liczba zgodne z danymi
 US4,Eksport CSV,Jako użytkownik chcę eksportować wydatki do CSV,3,SHOULD,Todo,Pobiera plik CSV z nagłówkami
 US5,Walidacja danych,Jako użytkownik chcę walidację pól aby unikać błędów,2,SHOULD,Todo,Błędne dane blokują zapis
