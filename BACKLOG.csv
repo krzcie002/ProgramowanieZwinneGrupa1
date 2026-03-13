@@ -1,11 +1,11 @@
 
 id,tytuł,opis,story_points,priorytet,status,akceptacja
-US1,Rejestracja studenta,Student może stworzyć nowe konto,3,MUST,Todo,Po rejestracji nowe konto widoczne w bazie.
-US2,Logowanie studenta,Student może logować się na swoje konto,3,MUST,Todo,Student jest autoryzowany.
-US3,Widok listy własnych projektów,Student widzi listę projektów w których uczestniczy,5,MUST,Todo,Student widzi tylko swoje projekty
-US4,Przypisywanie zadań w projekcie,Student ma możliwość przypisania zadań do zrobienia,5,MUST,Todo,W bazie danych są widoczne przypisania studentów do zadań
-US5,Zmienianie statusu zadania,Student może zmienić status zadania w projekcie,5,MUST,Todo,Status zadania został zmieniony i zapisany w bazie danych
-US6,Dodawanie i usuwanie zadań w projekcie,Student może dodawać i usuwać zadania do projektów,5,MUST,Todo,Suma i liczba zgodne z danymi
+US1,Rejestracja użytkownika,Użytkownik może stworzyć nowe konto,3,MUST,Todo,Po rejestracji nowe konto widoczne w bazie.
+US2,Logowanie użytkownika,Użytkownik może logować się na swoje konto,3,MUST,Todo,Użytkownik jest autoryzowany.
+STU3,Widok listy własnych projektów,Student widzi listę projektów w których uczestniczy,5,MUST,Todo,Student widzi tylko swoje projekty
+STU4,Przypisywanie zadań w projekcie,Student ma możliwość przypisania zadań do zrobienia,5,MUST,Todo,W bazie danych są widoczne przypisania studentów do zadań
+STU5,Zmienianie statusu zadania,Student może zmienić status zadania w projekcie,5,MUST,Todo,Status zadania został zmieniony i zapisany w bazie danych
+STU6,Dodawanie i usuwanie zadań w projekcie,Student może dodawać i usuwać zadania do projektów,5,MUST,Todo,Suma i liczba zgodne z danymi
 
 US4,Eksport CSV,Jako użytkownik chcę eksportować wydatki do CSV,3,SHOULD,Todo,Pobiera plik CSV z nagłówkami
 US5,Walidacja danych,Jako użytkownik chcę walidację pól aby unikać błędów,2,SHOULD,Todo,Błędne dane blokują zapis
