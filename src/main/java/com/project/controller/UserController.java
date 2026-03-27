@@ -1,7 +1,7 @@
-package com.project.list.controller;
+package com.project.controller;
 
-import com.project.list.model.User;
-import com.project.list.service.UserService;
+import com.project.model.User;
+import com.project.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

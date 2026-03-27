@@ -1,4 +1,4 @@
-package com.project.list.model;
+package com.project.model;
 
 import jakarta.persistence.*;
 import lombok.*;
