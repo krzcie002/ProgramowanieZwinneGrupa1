@@ -1,0 +1,16 @@
+id,tytuł,opis,story_points,priorytet,status,akceptacja
+US1,Rejestracja użytkownika,Użytkownik może stworzyć nowe konto,3,MUST,Todo,Po rejestracji nowe konto widoczne w bazie.
+US2,Logowanie użytkownika,Użytkownik może logować się na swoje konto,3,MUST,Todo,Użytkownik jest autoryzowany.
+STU3,Widok listy własnych projektów,Student widzi listę projektów w których uczestniczy,5,MUST,Todo,Student widzi tylko swoje projekty
+STU4,Przypisywanie zadań w projekcie,Student ma możliwość przypisania zadań do zrobienia,5,MUST,Todo,W bazie danych są widoczne przypisania studentów do zadań
+STU5,Zmienianie statusu zadania,Student może zmienić status zadania w projekcie,5,MUST,Todo,Status zadania został zmieniony i zapisany w bazie danych
+STU6,Dodawanie i usuwanie zadań w projekcie,Student może dodawać i usuwać zadania do projektów,5,MUST,Todo,Suma i liczba zgodne z danymi
+PRO1,Tworzenie projektów,Prowadzący może tworzyć nowy projekt i przypisać do niego studentów,5,MUST,Todo,Nowy projekt w bazie danych widoczny na liście projektów
+PRO2,Widok listy stworzonych projektów,Prowadzący widzi listę stworzonych przez siebie projektów i ich podzadania,5,MUST,Todo,Widoczna lista projektów z podzadaniami
+PRO3,Edycja projektów,Prowadzący może edytować utworzony przez siebie projekt,5,MUST,Todo,Zapis zmian w bazie danych
+ADM1,Widok wszystkich projektów i zadań,Admin ma dostęp do wszystkich projektów w liście,5,MUST,Todo,Widoczna lista
+TECH1,Pipeline CI,Konfiguracja testów+lint w CI,2,MUST,Doing,CI przechodzi zielono
+TECH2,Analiza jakości,Integracja SonarQube,3,COULD,Todo,Raport metryk jakości
+TECH3,Logging,Dodanie prostego logowania błędów i ostrzeżeń,2,COULD,Todo,Błędy zapisują się w lokalnym logu/konsoli
+TECH4,Bezpieczeństwo,System jest zabezpieczony przed włamaniami,3,SHOULD,Todo,Przechodzi testy bezpieczeństwa
+TECH5,Wydajność,Czas odpowiedzi systemu nie powinien przekraczać 1 sekundy,1,MUST,Todo,Pomiar czasu w teście nie przekracza 1 sekundy
