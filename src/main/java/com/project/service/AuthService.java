@@ -1,6 +1,9 @@
 package com.project.service;
 
-import com.project.auth.JwtService;
+import com.project.auth.Credentials;
+import com.project.auth.Tokens;
+import com.project.interfaces.IUserService;
+import com.project.model.Role;
 import com.project.interfaces.IAuthService;
 import com.project.model.User;
 import lombok.NonNull;
@@ -18,16 +21,16 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class AuthService implements IAuthService {
-    private final UserService userService;
+    private final IUserService userService;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
     @Override
     public void register(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoles("student");
-        userService.setUser(user);
+        user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
+        user.setRole(Role.student);
+        userService.createUser(user);
     }
 
     @Override
@@ -38,7 +41,7 @@ public class AuthService implements IAuthService {
     private Tokens authenticate(@NonNull String email, @NonNull String password) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
         var user = userService
-                .searchByEmail(email)
+                .getUserByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s not found!", email)));
         var accessToken = jwtService.generateAccessToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
@@ -58,7 +61,7 @@ public class AuthService implements IAuthService {
         final String token = refreshToken.startsWith(prefix) ? refreshToken.substring(prefix.length()) : refreshToken;
         final String email = jwtService.extractUsernameFromRefreshToken(token);
         if(email != null && !email.isBlank()) {
-            var user = userService.searchByEmail(email)
+            var user = userService.getUserByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s not found!", email)));
             if(jwtService.isRefreshTokenValid(token, user)) {
                 var accessToken = jwtService.generateAccessToken(user);

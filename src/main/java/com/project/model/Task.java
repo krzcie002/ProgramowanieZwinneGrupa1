@@ -29,6 +29,7 @@ public class Task {
     private String description;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private TaskStatus status = TaskStatus.todo;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -36,6 +37,7 @@ public class Task {
     private User createdBy;
 
     @Column(name = "is_deleted")
+    @Builder.Default
     private Boolean isDeleted = false;
 
     @Column(name = "created_at", updatable = false)

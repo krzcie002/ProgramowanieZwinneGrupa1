@@ -29,9 +29,11 @@ public class Project {
     private User owner;
 
     @Column(name = "status")
+    @Builder.Default
     private String status = "active";
 
     @Column(name = "is_deleted")
+    @Builder.Default
     private Boolean isDeleted = false;
 
     @Column(name = "created_at", updatable = false)

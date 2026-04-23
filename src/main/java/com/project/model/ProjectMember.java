@@ -30,5 +30,6 @@ public class ProjectMember {
     private Project project;
 
     @Column(name = "role")
+    @Builder.Default
     private String role = "student";
 }
