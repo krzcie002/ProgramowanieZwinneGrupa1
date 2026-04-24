@@ -1,0 +1,1 @@
+do bazy danych -żeby sie połączyć z terminala to wpisujecie ssh root@185.167.96.131 będziecie musieli wpisać hasło: zaq1@WSX3edc4rfv jak sie połączycie z serwerem to wpisujecie sudo mysql i na końcu USE moja_baza;
