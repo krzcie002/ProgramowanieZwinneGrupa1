@@ -1,5 +1,6 @@
 package com.project.service;
 
+import com.project.interfaces.ITaskAssigmentService;
 import com.project.model.TaskAssignment;
 import com.project.repository.TaskAssignmentRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class TaskAssignmentService {
+public class TaskAssignmentService implements ITaskAssigmentService {
 
     private final TaskAssignmentRepository repository;
 

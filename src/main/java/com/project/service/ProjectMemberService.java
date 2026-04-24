@@ -1,5 +1,6 @@
 package com.project.service;
 
+import com.project.interfaces.IProjectMemberService;
 import com.project.model.ProjectMember;
 import com.project.repository.ProjectMemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ProjectMemberService {
+public class ProjectMemberService implements IProjectMemberService {
 
     private final ProjectMemberRepository repository;
 

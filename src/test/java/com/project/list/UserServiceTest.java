@@ -85,9 +85,9 @@ class UserServiceTest {
     void shouldReturnUser_whenExistsAndNotDeleted() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        User result = userService.getUserById(1L);
+        Optional<User> result = userService.getUserById(1L);
 
-        assertEquals(user.getId(), result.getId());
+        assertEquals(user.getId(), result.get().getId());
     }
 
     @Test
