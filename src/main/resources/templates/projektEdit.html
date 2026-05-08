@@ -1,57 +1,108 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<link th:href="@{/css/edit-style.css}" rel="stylesheet" /> <!-- plik z...\resources\static\css\edit-style.css -->
-<title>Edycja projektu</title>
+ <meta charset="UTF-8">
+ <title>Edycja projektu</title>
+ <link th:href="@{/css/edit-style.css}" rel="stylesheet"/>
 </head>
+
 <body>
- <div class="root" th:with="isDelete=${#strings.equalsIgnoreCase(param.delete,'true')}">
- <form action="#" th:action="@{/projektEdit}" th:object="${projekt}" method="POST"
- th:with="akcja=*{projektId} ? (${isDelete}?'delete':'update') :'create', opis=*{projektId} ?
- (${isDelete}?'Usuń':'Aktualizuj') : 'Utwórz'" autocomplete="off">
 
- <h1 th:text="${opis} + ' projekt'">Edytuj projekt</h1>
+<div class="topbar">
+ <h2>System zarządzania projektami</h2>
 
- <div class="err" th:if="${#fields.hasErrors('*')}">
- BŁĘDY:
- <ul>
- <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Wprowadzone dane są niepoprawne!</li>
- </ul>
- </div>
-
- <div class="container">
- <div class="btns-panel">
- <input class="btn" type="submit" name="create" value="create" th:name="${akcja}" th:value="${opis}" />
- <input class="btn" type="submit" name="cancel" value="Anuluj" />
- </div>
- <div th:if="*{projektId}">
- <label for="projektId" class="lbl">Id:</label>
- <input th:field="*{projektId}" class="fld" readonly />
- </div>
- <div>
- <label for="nazwa" class="lbl">Nazwa:</label>
- <input th:field="*{nazwa}" class="fld" th:class="${#fields.hasErrors('opis')}? 'err' : 'fld'" size="45" />
- <span class="err" th:if="${#fields.hasErrors('nazwa')}" th:errors="*{nazwa}">Error</span>
- </div>
- <div>
- <label for="opis" class="lbl">Opis:</label>
- <textarea class="fld" rows="3" cols="47" th:field="*{opis}">Opis</textarea>
- </div>
- <div>
- <label for="dataOddania" class="lbl">Data oddania:</label>
- <input th:field="*{dataOddania}" class="fld" type="text" size="10" /><i>(RRRR-MM-DD)</i>
- </div>
- <div th:if="*{dataCzasUtworzenia}">
- <label for="dataCzasUtworzenia" class="lbl">Utworzony:</label>
- <input th:field="*{dataCzasUtworzenia}" class="fld" type="text" size="23" readonly />
- </div>
- <div th:if="*{dataCzasModyfikacji}">
- <label for="dataCzasModyfikacji" class="lbl">Zmodyfikowany:</label>
- <input th:field="*{dataCzasModyfikacji}" class="fld" type="text" size="23" readonly />
- </div>
- </div>
+ <form th:action="@{/logout}" method="post">
+  <button class="logout-btn" type="submit">Wyloguj</button>
  </form>
- </div>
+</div>
+
+<div class="root"
+     th:with="isDelete=${#strings.equalsIgnoreCase(param.delete,'true')}">
+
+ <form th:action="@{/projektEdit}"
+       th:object="${projekt}"
+       method="POST"
+
+       th:with="
+          akcja=*{projektId} ? (${isDelete}?'delete':'update') :'create',
+          opis=*{projektId} ? (${isDelete}?'Usuń':'Aktualizuj') : 'Utwórz'"
+
+       autocomplete="off">
+
+  <div class="card">
+
+   <h1 th:text="${opis} + ' projekt'">Edytuj projekt</h1>
+
+   <div class="err-box" th:if="${#fields.hasErrors('*')}">
+    <strong>Błędy formularza:</strong>
+
+    <ul>
+     <li th:each="err : ${#fields.errors('*')}"
+         th:text="${err}">
+      Błąd
+     </li>
+    </ul>
+   </div>
+
+   <div class="form-group" th:if="*{projektId}">
+    <label>ID projektu</label>
+    <input th:field="*{projektId}" readonly/>
+   </div>
+
+   <div class="form-group">
+    <label>Nazwa projektu</label>
+
+    <input th:field="*{nazwa}"
+           th:class="${#fields.hasErrors('nazwa')} ? 'input-error' : ''"/>
+
+    <span class="field-error"
+          th:if="${#fields.hasErrors('nazwa')}"
+          th:errors="*{nazwa}">
+                </span>
+   </div>
+
+   <div class="form-group">
+    <label>Opis projektu</label>
+    <textarea rows="5"
+              th:field="*{opis}"></textarea>
+   </div>
+
+   <div class="form-group">
+    <label>Data oddania</label>
+
+    <input type="date"
+           th:field="*{dataOddania}"/>
+   </div>
+
+   <div class="form-group" th:if="*{dataCzasUtworzenia}">
+    <label>Data utworzenia</label>
+    <input th:field="*{dataCzasUtworzenia}" readonly/>
+   </div>
+
+   <div class="form-group" th:if="*{dataCzasModyfikacji}">
+    <label>Data modyfikacji</label>
+    <input th:field="*{dataCzasModyfikacji}" readonly/>
+   </div>
+
+   <div class="buttons">
+
+    <button class="save-btn"
+            type="submit"
+            th:name="${akcja}"
+            th:text="${opis}">
+    </button>
+
+    <button class="cancel-btn"
+            type="submit"
+            name="cancel">
+     Anuluj
+    </button>
+
+   </div>
+
+  </div>
+ </form>
+</div>
+
 </body>
 </html>
