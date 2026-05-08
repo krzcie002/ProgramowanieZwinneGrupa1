@@ -1,47 +1,97 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
-    <link th:href="@{/css/list-style.css}" rel="stylesheet" />
-    <!-- plik z ...\resources\static\css\list-style.css -->
     <title>Lista projektów</title>
+    <link th:href="@{/css/list-style.css}" rel="stylesheet"/>
 </head>
+
 <body>
-<div class="root">
-    <h1>Lista projektów</h1>
-    <p>
-        <a th:href="@{/studentList}">Lista Studentów</a>
-        <a th:href="@{/zadanieList}">Lista zadań</a>
-    </p>
-    <p>
-        <a th:href="@{/projektEdit}">Dodaj projekt</a>
-    </p>
-    <table>
-        <thead>
-        <tr>
-            <th>Id</th>
-            <th>Nazwa</th>
-            <th>Opis</th>
-            <th>Utworzony</th>
-            <th>Zmodyfikowany</th>
-            <th>Data oddania</th>
-            <th>Edit</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="projekt : ${projekty}">
-            <td th:text="${projekt.projektId}">Id</td>
-            <td th:text="${projekt.nazwa}">Nazwa</td>
-            <td th:text="${projekt.opis}">Opis</td>
-            <td th:text="${#temporals.format(projekt.dataCzasUtworzenia, 'yyyy-MM-dd HH:mm:ss')}">Utworzony</td>
-            <td th:text="${#temporals.format(projekt.dataCzasModyfikacji, 'yyyy-MM-dd HH:mm:ss')}">Zmodyfikowany</td>
-            <td th:text="${#temporals.format(projekt.dataOddania, 'yyyy-MM-dd')}">Data oddania</td>
-            <td><a th:href="@{/projektEdit(projektId=${projekt.projektId})}">Edytuj</a><br>
-                <a th:href="@{/projektEdit(projektId=${projekt.projektId},delete='true')}">Usuń</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+
+<div class="topbar">
+    <h2>System zarządzania projektami</h2>
+
+    <form th:action="@{/logout}" method="post">
+        <button class="logout-btn" type="submit">Wyloguj</button>
+    </form>
 </div>
+
+<div class="root">
+
+    <div class="header-section">
+        <h1>Lista projektów</h1>
+
+        <div class="nav-links">
+            <a th:href="@{/studentList}">Studenci</a>
+            <a th:href="@{/zadanieList}">Zadania</a>
+            <a class="add-btn" th:href="@{/projektEdit}">
+                + Dodaj projekt
+            </a>
+        </div>
+    </div>
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nazwa</th>
+                <th>Opis</th>
+                <th>Utworzony</th>
+                <th>Zmodyfikowany</th>
+                <th>Termin</th>
+                <th>Akcje</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            <tr th:each="projekt : ${projekty}">
+
+                <td th:text="${projekt.projektId}"></td>
+
+                <td th:text="${projekt.nazwa}"></td>
+
+                <td th:text="${projekt.opis}"></td>
+
+                <td th:text="${#temporals.format(projekt.dataCzasUtworzenia,
+                'yyyy-MM-dd HH:mm')}">
+                </td>
+
+                <td th:text="${#temporals.format(projekt.dataCzasModyfikacji,
+                'yyyy-MM-dd HH:mm')}">
+                </td>
+
+                <td th:text="${#temporals.format(projekt.dataOddania,
+                'yyyy-MM-dd')}">
+                </td>
+
+                <td class="actions">
+
+                    <a class="edit-link"
+                       th:href="@{/projektEdit(projektId=${projekt.projektId})}">
+                        Edytuj
+                    </a>
+
+                    <a class="delete-link"
+                       th:href="@{/projektEdit(projektId=${projekt.projektId},
+                       delete='true')}">
+                        Usuń
+                    </a>
+
+                </td>
+
+            </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+</div>
+
 </body>
 </html>
