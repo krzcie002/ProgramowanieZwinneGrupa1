@@ -22,7 +22,7 @@ public class TaskService implements ITaskService {
     }
 
     @Override
-    public Task updateTask(Long id, Task updatedTask) {
+    public Task updateTask(Integer id, Task updatedTask) {
         Task task = getTaskById(id)
                 .orElseThrow(() -> new RuntimeException("Task not found"));;
 
@@ -34,7 +34,7 @@ public class TaskService implements ITaskService {
     }
 
     @Override
-    public void deleteTask(Long id) {
+    public void deleteTask(Integer id) {
         Task task = getTaskById(id)
                 .orElseThrow(() -> new RuntimeException("Task not found"));;
         task.setIsDeleted(true);
@@ -50,18 +50,18 @@ public class TaskService implements ITaskService {
     }
 
     @Override
-    public Optional<Task> getTaskById(Long id) {
+    public Optional<Task> getTaskById(Integer id) {
         return taskRepository.findById(id)
                 .filter(task -> !task.getIsDeleted());
     }
 
     @Override
-    public List<Task> getTasksByProject(Long projectId) {
+    public List<Task> getTasksByProject(Integer projectId) {
         return taskRepository.findByProjectIdAndIsDeletedFalse(projectId);
     }
 
     @Override
-    public Task changeStatus(Long id, String status) {
+    public Task changeStatus(Integer id, String status) {
         Task task = getTaskById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));;
         task.setStatus(TaskStatus.valueOf(status));

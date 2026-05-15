@@ -24,7 +24,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User updateUser(Long id, User updatedUser) {
+    public User updateUser(Integer id, User updatedUser) {
         User user = getUserById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -37,7 +37,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void deleteUser(Long id) {
+    public void deleteUser(Integer id) {
         User user = getUserById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         user.setIsDeleted(true); // soft delete
@@ -53,7 +53,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public Optional<User> getUserById(Long id) {
+    public Optional<User> getUserById(Integer id) {
         return userRepository.findById(id)
                 .filter(user -> !user.getIsDeleted());
     }

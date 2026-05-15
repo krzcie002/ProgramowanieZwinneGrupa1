@@ -20,17 +20,17 @@ public class TaskAssignmentController {
     }
 
     @GetMapping("/task/{taskId}")
-    public List<TaskAssignment> getUsersByTask(@PathVariable Long taskId) {
+    public List<TaskAssignment> getUsersByTask(@PathVariable Integer taskId) {
         return service.getUsersByTask(taskId);
     }
 
     @GetMapping("/user/{userId}")
-    public List<TaskAssignment> getTasksByUser(@PathVariable Long userId) {
+    public List<TaskAssignment> getTasksByUser(@PathVariable Integer userId) {
         return service.getTasksByUser(userId);
     }
 
     @DeleteMapping("/{id}")
-    public void removeAssignment(@PathVariable Long id) {
+    public void removeAssignment(@PathVariable Integer id) {
         service.removeAssignment(id);
     }
 }

@@ -20,22 +20,22 @@ public class ProjectMemberController {
     }
 
     @GetMapping("/project/{projectId}")
-    public List<ProjectMember> getMembersByProject(@PathVariable Long projectId) {
+    public List<ProjectMember> getMembersByProject(@PathVariable Integer projectId) {
         return service.getMembersByProject(projectId);
     }
 
     @GetMapping("/user/{userId}")
-    public List<ProjectMember> getProjectsByUser(@PathVariable Long userId) {
+    public List<ProjectMember> getProjectsByUser(@PathVariable Integer userId) {
         return service.getProjectsByUser(userId);
     }
 
     @PutMapping("/{id}/role")
-    public ProjectMember updateRole(@PathVariable Long id, @RequestParam String role) {
+    public ProjectMember updateRole(@PathVariable Integer id, @RequestParam String role) {
         return service.updateRole(id, role);
     }
 
     @DeleteMapping("/{id}")
-    public void removeMember(@PathVariable Long id) {
+    public void removeMember(@PathVariable Integer id) {
         service.removeMember(id);
     }
 }

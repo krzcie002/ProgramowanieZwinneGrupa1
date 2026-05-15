@@ -21,12 +21,12 @@ public class ProjectController {
     }
 
     @PutMapping("/{id}")
-    public Project updateProject(@PathVariable Long id, @RequestBody Project project) {
+    public Project updateProject(@PathVariable Integer id, @RequestBody Project project) {
         return projectService.updateProject(id, project);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteProject(@PathVariable Long id) {
+    public void deleteProject(@PathVariable Integer id) {
         projectService.deleteProject(id);
     }
 
@@ -36,7 +36,7 @@ public class ProjectController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Project> getProjectById(@PathVariable Long id) {
+    public Optional<Project> getProjectById(@PathVariable Integer id) {
         return projectService.getProjectById(id);
     }
 

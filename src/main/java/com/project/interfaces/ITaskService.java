@@ -7,11 +7,11 @@ import java.util.Optional;
 
 public interface ITaskService {
     Task createTask(Task task);
-    Task updateTask(Long id, Task task);
-    void deleteTask(Long taskId);
+    Task updateTask(Integer id, Task task);
+    void deleteTask(Integer taskId);
     List<Task> getAllTasks();
-    Optional<Task> getTaskById(Long taskId);
-    List<Task> getTasksByProject(Long projectId);
-    Task changeStatus(Long id, String status);
+    Optional<Task> getTaskById(Integer taskId);
+    List<Task> getTasksByProject(Integer projectId);
+    Task changeStatus(Integer id, String status);
 }
 

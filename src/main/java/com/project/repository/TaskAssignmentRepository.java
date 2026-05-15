@@ -6,13 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface TaskAssignmentRepository extends JpaRepository<TaskAssignment, Long> {
+public interface TaskAssignmentRepository extends JpaRepository<TaskAssignment, Integer> {
 
-    List<TaskAssignment> findByTaskId(Long taskId);
+    List<TaskAssignment> findByTaskId(Integer taskId);
 
-    List<TaskAssignment> findByUserId(Long userId);
+    List<TaskAssignment> findByUserId(Integer userId);
 
-    Optional<TaskAssignment> findByTaskIdAndUserId(Long taskId, Long userId);
+    Optional<TaskAssignment> findByTaskIdAndUserId(Integer taskId, Integer userId);
 
-    boolean existsByTaskIdAndUserId(Long taskId, Long userId);
+    boolean existsByTaskIdAndUserId(Integer taskId, Integer userId);
 }

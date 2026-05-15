@@ -1,6 +1,7 @@
 package com.project.service;
 
 import com.project.auth.Credentials;
+import com.project.auth.RegisterRequest;
 import com.project.auth.Tokens;
 import com.project.interfaces.IUserService;
 import com.project.model.Role;
@@ -27,9 +28,15 @@ public class AuthService implements IAuthService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public void register(User user) {
-        user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
-        user.setRole(Role.student);
+    public void register(RegisterRequest request) {
+        User user = User.builder()
+                .email(request.getEmail())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .role(Role.student)
+                .passwordHash(passwordEncoder.encode(request.getPassword()))
+                .build();
+
         userService.createUser(user);
     }
 

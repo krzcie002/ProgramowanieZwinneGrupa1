@@ -17,20 +17,20 @@ public class FileService {
         return fileRepository.save(file);
     }
 
-    public List<FileEntity> getFilesByTask(Long taskId) {
+    public List<FileEntity> getFilesByTask(Integer taskId) {
         return fileRepository.findByTaskId(taskId);
     }
 
-    public List<FileEntity> getFilesByUser(Long userId) {
+    public List<FileEntity> getFilesByUser(Integer userId) {
         return fileRepository.findByUploadedById(userId);
     }
 
-    public FileEntity getFileById(Long id) {
+    public FileEntity getFileById(Integer id) {
         return fileRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("File not found"));
     }
 
-    public void deleteFile(Long id) {
+    public void deleteFile(Integer id) {
         fileRepository.deleteById(id);
     }
 }

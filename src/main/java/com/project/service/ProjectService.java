@@ -21,7 +21,7 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
-    public Project updateProject(Long id, Project updatedProject) {
+    public Project updateProject(Integer id, Project updatedProject) {
         Project project = getProjectById(id)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
 
@@ -33,7 +33,7 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
-    public void deleteProject(Long id) {
+    public void deleteProject(Integer id) {
         Project project = getProjectById(id)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
         project.setIsDeleted(true);
@@ -46,7 +46,7 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
-    public Optional<Project> getProjectById(Long id) {
+    public Optional<Project> getProjectById(Integer id) {
         return projectRepository.findById(id)
                 .filter(p -> !p.getIsDeleted());
     }

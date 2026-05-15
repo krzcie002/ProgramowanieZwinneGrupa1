@@ -9,8 +9,8 @@ import java.util.Optional;
 
 public interface IProjectService {
     Project createProject(Project project);
-    Project updateProject(Long id, Project project);
-    void deleteProject(Long projectId);
+    Project updateProject(Integer id, Project project);
+    void deleteProject(Integer projectId);
     List<Project> getAllProjects();
-    Optional<Project> getProjectById(Long projectId);
+    Optional<Project> getProjectById(Integer projectId);
 }

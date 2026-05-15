@@ -24,9 +24,14 @@ public class SecurityWebConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                //Endpoints without auth
                                 "/api/register",
                                 "/api/login",
                                 "/api/refresh",
+                                "/login.html",
+                                "/register.html",
+
+
                                 //Swagger testing
                                 "/v2/api-docs",
                                 "/v3/api-docs",

@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ITaskAssigmentService {
     public TaskAssignment assignUser(TaskAssignment assignment);
-    public List<TaskAssignment> getUsersByTask(Long taskId);
-    public List<TaskAssignment> getTasksByUser(Long userId);
-    public void removeAssignment(Long id);
+    public List<TaskAssignment> getUsersByTask(Integer taskId);
+    public List<TaskAssignment> getTasksByUser(Integer userId);
+    public void removeAssignment(Integer id);
 }

@@ -5,9 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface TaskRepository extends JpaRepository<Task, Long> {
+public interface TaskRepository extends JpaRepository<Task, Integer> {
 
-    List<Task> findByProjectIdAndIsDeletedFalse(Long projectId);
+    List<Task> findByProjectIdAndIsDeletedFalse(Integer projectId);
 
-    List<Task> findByCreatedById(Long userId);
+    List<Task> findByCreatedById(Integer userId);
 }

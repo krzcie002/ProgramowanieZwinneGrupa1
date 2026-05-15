@@ -1,6 +1,7 @@
 package com.project.controller;
 
 import com.project.auth.Credentials;
+import com.project.auth.RegisterRequest;
 import com.project.auth.Tokens;
 import com.project.model.User;
 import com.project.service.AuthService;
@@ -20,13 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Auth")
 public class AuthController {
     private final AuthService authService;
-    private final ValidationService<User> userValidator;
+    private final ValidationService<RegisterRequest> userValidator;
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@RequestBody User user) {
-        userValidator.validate(user);
-        authService.register(user);
-        return new ResponseEntity<Void>(HttpStatus.CREATED);
+    public ResponseEntity<Void> register(@RequestBody RegisterRequest request) {
+        userValidator.validate(request);
+        authService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/login")

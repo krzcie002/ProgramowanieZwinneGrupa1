@@ -15,8 +15,8 @@ public class TaskAssignmentService implements ITaskAssigmentService {
     private final TaskAssignmentRepository repository;
 
     public TaskAssignment assignUser(TaskAssignment assignment) {
-        Long taskId = assignment.getTask().getId();
-        Long userId = assignment.getUser().getId();
+        Integer taskId = assignment.getTask().getId();
+        Integer userId = assignment.getUser().getId();
 
         if (repository.existsByTaskIdAndUserId(taskId, userId)) {
             throw new RuntimeException("User already assigned to this task");
@@ -25,15 +25,15 @@ public class TaskAssignmentService implements ITaskAssigmentService {
         return repository.save(assignment);
     }
 
-    public List<TaskAssignment> getUsersByTask(Long taskId) {
+    public List<TaskAssignment> getUsersByTask(Integer taskId) {
         return repository.findByTaskId(taskId);
     }
 
-    public List<TaskAssignment> getTasksByUser(Long userId) {
+    public List<TaskAssignment> getTasksByUser(Integer userId) {
         return repository.findByUserId(userId);
     }
 
-    public void removeAssignment(Long id) {
+    public void removeAssignment(Integer id) {
         repository.deleteById(id);
     }
 }

@@ -24,19 +24,19 @@ public class ProjectMemberService implements IProjectMemberService {
         return repository.save(member);
     }
 
-    public List<ProjectMember> getMembersByProject(Long projectId) {
+    public List<ProjectMember> getMembersByProject(Integer projectId) {
         return repository.findByProjectId(projectId);
     }
 
-    public List<ProjectMember> getProjectsByUser(Long userId) {
+    public List<ProjectMember> getProjectsByUser(Integer userId) {
         return repository.findByUserId(userId);
     }
 
-    public void removeMember(Long id) {
+    public void removeMember(Integer id) {
         repository.deleteById(id);
     }
 
-    public ProjectMember updateRole(Long id, String role) {
+    public ProjectMember updateRole(Integer id, String role) {
         ProjectMember member = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Member not found"));
 

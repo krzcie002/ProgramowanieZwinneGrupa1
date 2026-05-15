@@ -6,13 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface ProjectMemberRepository extends JpaRepository<ProjectMember, Long> {
+public interface ProjectMemberRepository extends JpaRepository<ProjectMember, Integer> {
 
-    List<ProjectMember> findByProjectId(Long projectId);
+    List<ProjectMember> findByProjectId(Integer projectId);
 
-    List<ProjectMember> findByUserId(Long userId);
+    List<ProjectMember> findByUserId(Integer userId);
 
-    Optional<ProjectMember> findByUserIdAndProjectId(Long userId, Long projectId);
+    Optional<ProjectMember> findByUserIdAndProjectId(Integer userId, Integer projectId);
 
-    boolean existsByUserIdAndProjectId(Long userId, Long projectId);
+    boolean existsByUserIdAndProjectId(Integer userId, Integer projectId);
 }
