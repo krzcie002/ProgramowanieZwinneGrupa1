@@ -1,8 +1,14 @@
 package com.project.service;
 
+import com.project.dto.ProjectCreateRequest;
+import com.project.dto.ProjectDto;
+import com.project.dto.ProjectMapper;
+import com.project.dto.ProjectUpdateRequest;
 import com.project.interfaces.IProjectService;
 import com.project.model.Project;
+import com.project.model.User;
 import com.project.repository.ProjectRepository;
+import com.project.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,44 +20,59 @@ import java.util.Optional;
 public class ProjectService implements IProjectService {
 
     private final ProjectRepository projectRepository;
+    private final UserRepository userRepository;
 
     @Override
-    public Project createProject(Project project) {
-        return projectRepository.save(project);
+    public ProjectDto createProject(ProjectCreateRequest request) {
+
+        User owner = userRepository.findById(request.ownerId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Project project = Project.builder()
+                .name(request.name())
+                .description(request.description())
+                .owner(owner)
+                .status("active")
+                .isDeleted(false)
+                .build();
+
+        return ProjectMapper.toDto(projectRepository.save(project));
     }
 
     @Override
-    public Project updateProject(Integer id, Project updatedProject) {
-        Project project = getProjectById(id)
+    public ProjectDto updateProject(Integer id, ProjectUpdateRequest request) {
+        Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
 
-        project.setName(updatedProject.getName());
-        project.setDescription(updatedProject.getDescription());
-        project.setStatus(updatedProject.getStatus());
+        project.setName(request.name());
+        project.setDescription(request.description());
+        project.setStatus(request.status());
 
-        return projectRepository.save(project);
+        return ProjectMapper.toDto(projectRepository.save(project));
     }
 
     @Override
     public void deleteProject(Integer id) {
-        Project project = getProjectById(id)
+        Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
+
         project.setIsDeleted(true);
         projectRepository.save(project);
     }
 
     @Override
-    public List<Project> getAllProjects() {
-        return projectRepository.findByIsDeletedFalse();
+    public List<ProjectDto> getAllProjects() {
+        return projectRepository.findByIsDeletedFalse()
+                .stream()
+                .map(ProjectMapper::toDto)
+                .toList();
     }
 
     @Override
-    public Optional<Project> getProjectById(Integer id) {
+    public ProjectDto getProjectById(Integer id) {
         return projectRepository.findById(id)
-                .filter(p -> !p.getIsDeleted());
+                .filter(p -> !p.getIsDeleted())
+                .map(ProjectMapper::toDto)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
     }
-
-
-
-
 }

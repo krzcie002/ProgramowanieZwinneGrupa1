@@ -16,23 +16,22 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @RequiredArgsConstructor
 public class SecurityWebConfig {
     private final JwtAuthFilter jwtAuthFilter;
+    private final JwtAuthEntryPoint jwtAuthEntryPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(jwtAuthEntryPoint)
+                )
                 .authorizeHttpRequests(auth -> auth
+                        // public static resources
+                        .requestMatchers("/css/**").permitAll()
+
+                        // swagger
                         .requestMatchers(
-                                //Endpoints without auth
-                                "/api/register",
-                                "/api/login",
-                                "/api/refresh",
-                                "/login.html",
-                                "/register.html",
-
-
-                                //Swagger testing
                                 "/v2/api-docs",
                                 "/v3/api-docs",
                                 "/v3/api-docs/**",
@@ -42,8 +41,19 @@ public class SecurityWebConfig {
                                 "/configuration/security",
                                 "/swagger-ui/**",
                                 "/webjars/**",
-                                "/swagger-ui.html").permitAll()
+                                "/swagger-ui.html"
+                        ).permitAll()
+
+                        // auth endpoints
+                        .requestMatchers("/api/login", "/api/register", "/api/refresh").permitAll()
+
+                        // protected API
                         .requestMatchers("/api/users/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/**").authenticated()
+
+                        // pages
+                        .requestMatchers("/", "/login", "/register", "/projektList").permitAll()
+
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

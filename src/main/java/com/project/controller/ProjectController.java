@@ -1,5 +1,8 @@
 package com.project.controller;
 
+import com.project.dto.ProjectCreateRequest;
+import com.project.dto.ProjectDto;
+import com.project.dto.ProjectUpdateRequest;
 import com.project.model.Project;
 import com.project.service.ProjectService;
 import lombok.RequiredArgsConstructor;
@@ -16,13 +19,16 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @PostMapping
-    public Project createProject(@RequestBody Project project) {
-        return projectService.createProject(project);
+    public ProjectDto createProject(@RequestBody ProjectCreateRequest request) {
+        return projectService.createProject(request);
     }
 
     @PutMapping("/{id}")
-    public Project updateProject(@PathVariable Integer id, @RequestBody Project project) {
-        return projectService.updateProject(id, project);
+    public ProjectDto updateProject(
+            @PathVariable Integer id,
+            @RequestBody ProjectUpdateRequest request
+    ) {
+        return projectService.updateProject(id, request);
     }
 
     @DeleteMapping("/{id}")
@@ -31,14 +37,12 @@ public class ProjectController {
     }
 
     @GetMapping
-    public List<Project> getAllProjects() {
+    public List<ProjectDto> getAllProjects() {
         return projectService.getAllProjects();
     }
 
     @GetMapping("/{id}")
-    public Optional<Project> getProjectById(@PathVariable Integer id) {
+    public ProjectDto getProjectById(@PathVariable Integer id) {
         return projectService.getProjectById(id);
     }
-
-
 }

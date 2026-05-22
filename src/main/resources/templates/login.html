@@ -16,7 +16,7 @@
 
         <h1>Logowanie</h1>
 
-        <form th:action="@{/login}" method="post">
+        <form onsubmit="login(event)">
 
             <div class="form-group">
 
@@ -25,8 +25,7 @@
                 <input type="email"
                        name="email"
                        value="login@pbs.edu.pl"
-                       required
-                       pattern="^[A-Za-z0-9+_.-]+@pbs.edu.pl$"/>
+                       required/>
 
             </div>
 
@@ -62,4 +61,32 @@
 </div>
 
 </body>
+
+<script>
+    async function login(e) {
+        e.preventDefault();
+
+        const email = document.querySelector("input[name='email']").value;
+        const password = document.querySelector("input[name='password']").value;
+
+        const response = await fetch("/api/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, password })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+
+            localStorage.setItem("accessToken", data.accessToken);
+            localStorage.setItem("refreshToken", data.refreshToken);
+
+            window.location.href = "/projektList";
+        } else {
+            alert("Login failed");
+        }
+    }
+</script>
 </html>

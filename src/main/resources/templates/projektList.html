@@ -1,10 +1,9 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
-
+<html>
 <head>
     <meta charset="UTF-8">
     <title>Lista projektów</title>
-    <link th:href="@{/css/list-style.css}" rel="stylesheet"/>
+    <link href="/css/list-style.css" rel="stylesheet"/>
 </head>
 
 <body>
@@ -12,9 +11,9 @@
 <div class="topbar">
     <h2>System zarządzania projektami</h2>
 
-    <form th:action="@{/logout}" method="post">
-        <button class="logout-btn" type="submit">Wyloguj</button>
-    </form>
+    <button class="logout-btn" onclick="logout()">
+        Wyloguj
+    </button>
 </div>
 
 <div class="root">
@@ -23,9 +22,9 @@
         <h1>Lista projektów</h1>
 
         <div class="nav-links">
-            <a th:href="@{/studentList}">Studenci</a>
-            <a th:href="@{/zadanieList}">Zadania</a>
-            <a class="add-btn" th:href="@{/projektEdit}">
+            <a href="/studentList">Studenci</a>
+            <a href="/zadanieList">Zadania</a>
+            <a class="add-btn" href="/projektEdit">
                 + Dodaj projekt
             </a>
         </div>
@@ -34,7 +33,6 @@
     <div class="table-container">
 
         <table>
-
             <thead>
             <tr>
                 <th>ID</th>
@@ -47,51 +45,122 @@
             </tr>
             </thead>
 
-            <tbody>
-
-            <tr th:each="projekt : ${projekty}">
-
-                <td th:text="${projekt.projektId}"></td>
-
-                <td th:text="${projekt.nazwa}"></td>
-
-                <td th:text="${projekt.opis}"></td>
-
-                <td th:text="${#temporals.format(projekt.dataCzasUtworzenia,
-                'yyyy-MM-dd HH:mm')}">
-                </td>
-
-                <td th:text="${#temporals.format(projekt.dataCzasModyfikacji,
-                'yyyy-MM-dd HH:mm')}">
-                </td>
-
-                <td th:text="${#temporals.format(projekt.dataOddania,
-                'yyyy-MM-dd')}">
-                </td>
-
-                <td class="actions">
-
-                    <a class="edit-link"
-                       th:href="@{/projektEdit(projektId=${projekt.projektId})}">
-                        Edytuj
-                    </a>
-
-                    <a class="delete-link"
-                       th:href="@{/projektEdit(projektId=${projekt.projektId},
-                       delete='true')}">
-                        Usuń
-                    </a>
-
-                </td>
-
-            </tr>
-
+            <tbody id="projekty-body">
+            <!-- JS renders rows here -->
             </tbody>
 
         </table>
 
     </div>
 </div>
+
+<script>
+    /* =========================
+       AUTH CHECK (GUARD)
+    ========================= */
+    async function checkAuth() {
+        const token = localStorage.getItem("accessToken");
+
+        if (!token) {
+            window.location.href = "/login";
+            return false;
+        }
+
+        const res = await fetch("/api/users/me", {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        if (res.status === 401) {
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            window.location.href = "/login";
+            return false;
+        }
+
+        return true;
+    }
+
+    /* =========================
+       LOAD PROJECTS
+    ========================= */
+    async function loadProjects() {
+        const token = localStorage.getItem("accessToken");
+
+        const res = await fetch("/api/projekty", {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        if (res.status === 401) {
+            logout();
+            return;
+        }
+
+        if (!res.ok) {
+            alert("Nie udało się pobrać projektów");
+            return;
+        }
+
+        const projekty = await res.json();
+
+        const tbody = document.getElementById("projekty-body");
+
+        tbody.innerHTML = projekty.map(p => `
+        <tr>
+            <td>${p.id}</td>
+            <td>${p.name}</td>
+            <td>${p.description || ""}</td>
+            <td>${formatDateTime(p.createdAt)}</td>
+            <td>${p.status}</td>
+            <td>${p.ownerId ?? "-"}</td>
+            <td class="actions">
+                <a href="/projektEdit?projektId=${p.projektId}">
+                    Edytuj
+                </a>
+
+                <a href="/projektEdit?projektId=${p.projektId}&delete=true">
+                    Usuń
+                </a>
+            </td>
+        </tr>
+    `).join("");
+    }
+
+    /* =========================
+       HELPERS
+    ========================= */
+    function formatDateTime(value) {
+        if (!value) return "";
+        return new Date(value).toLocaleString();
+    }
+
+    function formatDate(value) {
+        if (!value) return "";
+        return new Date(value).toLocaleDateString();
+    }
+
+    /* =========================
+       LOGOUT
+    ========================= */
+    function logout() {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        window.location.href = "/login";
+    }
+
+    /* =========================
+       INIT
+    ========================= */
+    (async function init() {
+        const ok = await checkAuth();
+        if (ok) {
+            await loadProjects();
+        }
+    })();
+</script>
 
 </body>
 </html>

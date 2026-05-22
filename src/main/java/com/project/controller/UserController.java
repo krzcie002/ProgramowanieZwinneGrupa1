@@ -1,5 +1,8 @@
 package com.project.controller;
 
+import com.project.dto.UserCreateRequest;
+import com.project.dto.UserDto;
+import com.project.dto.UserUpdateRequest;
 import com.project.model.User;
 import com.project.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -16,13 +19,13 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.createUser(user);
+    public UserDto createUser(@RequestBody UserCreateRequest request) {
+        return userService.createUser(request);
     }
 
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable Integer id, @RequestBody User user) {
-        return userService.updateUser(id, user);
+    public UserDto updateUser(@PathVariable Integer id, @RequestBody UserUpdateRequest request) {
+        return userService.updateUser(id, request);
     }
 
     @DeleteMapping("/{id}")
@@ -31,12 +34,12 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
+    public List<UserDto> getAllUsers() {
         return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
-    public Optional<User> getUserById(@PathVariable Integer id) {
+    public UserDto getUserById(@PathVariable Integer id) {
         return userService.getUserById(id);
     }
 }

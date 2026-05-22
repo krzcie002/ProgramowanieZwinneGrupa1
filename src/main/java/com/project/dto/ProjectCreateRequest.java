@@ -1,0 +1,7 @@
+package com.project.dto;
+
+public record ProjectCreateRequest(
+        String name,
+        String description,
+        Integer ownerId
+) {}
