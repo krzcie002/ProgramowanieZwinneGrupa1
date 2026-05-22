@@ -83,4 +83,9 @@ public class UserService implements IUserService {
                 .map(UserMapper::toDto)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
+
+    @Override
+    public Optional<User> getUserDetailsByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 }

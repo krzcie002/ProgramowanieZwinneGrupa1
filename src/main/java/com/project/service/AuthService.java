@@ -3,10 +3,9 @@ package com.project.service;
 import com.project.auth.Credentials;
 import com.project.auth.RegisterRequest;
 import com.project.auth.Tokens;
-import com.project.dto.RefreshTokenRequest;
+import com.project.auth.RefreshTokenRequest;
 import com.project.dto.UserCreateRequest;
 import com.project.interfaces.IUserService;
-import com.project.model.Role;
 import com.project.interfaces.IAuthService;
 import com.project.model.User;
 import lombok.NonNull;
@@ -16,11 +15,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -79,25 +75,25 @@ public class AuthService implements IAuthService {
             throw new UsernameNotFoundException(String.format("User %s not found!", email));
         }
 
-        if (!jwtService.isRefreshTokenValid(token)) {
-            new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token odświeżania stracił ważność");
+        var user = userService.getUserDetailsByEmail(email)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(
+                                String.format("User %s not found!", email)
+                        ));
+
+        if (jwtService.isRefreshTokenValid(token, user)) {
+            var accessToken = jwtService.generateAccessToken(user);
+            var newRefreshToken = jwtService.generateRefreshToken(user);
+
+            return Tokens.builder()
+                    .accessToken(accessToken)
+                    .refreshToken(newRefreshToken)
+                    .build();
         }
 
-        if(email != null && !email.isBlank()) {
-            var user = userService.getUserByEmail(email)
-                    .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s not found!", email)));
-            if(jwtService.isRefreshTokenValid(token, user)) {
-                var accessToken = jwtService.generateAccessToken(user);
-                var newRefreshToken = jwtService.generateRefreshToken(user);
-                return Tokens.builder()
-                        .accessToken(accessToken)
-                        .refreshToken(newRefreshToken)
-                        .build();
-            } else {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token odświeżania stracił ważność");
-            }
-        } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Niepoprawny format tokenu odświeżania");
-        }
+        throw new ResponseStatusException(
+                HttpStatus.UNAUTHORIZED,
+                "Token odświeżania stracił ważność"
+        );
     }
 }

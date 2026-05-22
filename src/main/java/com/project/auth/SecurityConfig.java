@@ -17,14 +17,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final UserService userService;
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return username -> userService
-                .getUserByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s not found!", username)));
-    }
+    private final JwtAuthFilter jwtAuthFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {

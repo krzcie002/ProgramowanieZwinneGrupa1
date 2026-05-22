@@ -1,4 +1,4 @@
-package com.project.dto;
+package com.project.auth;
 
 public record RefreshTokenRequest(
         String refreshToken

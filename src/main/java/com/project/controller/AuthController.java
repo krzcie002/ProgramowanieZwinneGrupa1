@@ -3,7 +3,7 @@ package com.project.controller;
 import com.project.auth.Credentials;
 import com.project.auth.RegisterRequest;
 import com.project.auth.Tokens;
-import com.project.model.User;
+import com.project.auth.RefreshTokenRequest;
 import com.project.service.AuthService;
 import com.project.service.ValidationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,7 +36,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<Tokens> refreshToken(@RequestBody Tokens tokens) {
-        return ResponseEntity.ok(authService.refreshTokens(tokens));
+    public ResponseEntity<Tokens> refreshToken(@RequestBody RefreshTokenRequest request) {
+        return ResponseEntity.ok(authService.refreshTokens(request));
     }
 }
