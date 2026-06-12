@@ -23,9 +23,8 @@
 
 <div class="root">
 
-    <form th:action="@{/projektAdd}"
+    <form id="projektForm"
           th:object="${projekt}"
-          method="POST"
           autocomplete="off">
 
         <div class="card">
@@ -123,4 +122,93 @@
 </div>
 
 </body>
+
+<script>
+    document.getElementById("projektForm")
+        .addEventListener("submit", async (e) => {
+
+            e.preventDefault();
+
+            const token = localStorage.getItem("accessToken");
+
+            const body = {
+                name: document.querySelector("[name='name']").value,
+                description: document.querySelector("[name='description']").value,
+                status: document.querySelector("[name='status']").value
+            };
+
+            const res = await fetch("/api/projects", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify(body)
+            });
+
+            if (res.status === 401) {
+                logout();
+                return;
+            }
+
+            if (!res.ok) {
+                alert("Błąd zapisu projektu");
+                return;
+            }
+
+            window.location.href = "/projektList";
+        });
+    /* =========================
+       AUTH CHECK (GUARD)
+    ========================= */
+    async function checkAuth() {
+        const token = localStorage.getItem("accessToken");
+
+        if (!token) {
+            window.location.href = "/login";
+            return false;
+        }
+
+        const res = await fetch("/api/users/me", {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        if (res.status === 401) {
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            window.location.href = "/login";
+            return false;
+        }
+
+        return true;
+    }
+
+    /* =========================
+       HELPERS
+    ========================= */
+    function formatDateTime(value) {
+        if (!value) return "";
+        return new Date(value).toLocaleString();
+    }
+
+    function formatDate(value) {
+        if (!value) return "";
+        return new Date(value).toLocaleDateString();
+    }
+
+    /* =========================
+       LOGOUT
+    ========================= */
+    function logout() {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        window.location.href = "/login";
+    }
+
+    /* =========================
+       INIT
+    ========================= */
+</script>
 </html>

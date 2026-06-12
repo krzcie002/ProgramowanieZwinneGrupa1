@@ -24,8 +24,8 @@
         <div class="nav-links">
             <a href="/studentList">Studenci</a>
             <a href="/zadanieList">Zadania</a>
-            <a class="add-btn" th:href="@{/projectAdd}">
-                + Dodaj projekt
+            <a th:href="@{/projectAdd}">
+                Dodaj projekt
             </a>
         </div>
     </div>
@@ -88,7 +88,7 @@
     async function loadProjects() {
         const token = localStorage.getItem("accessToken");
 
-        const res = await fetch("/api/projects", {
+        const res = await fetch("/api/projekty", {
             headers: {
                 "Authorization": "Bearer " + token
             }
