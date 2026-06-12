@@ -10,6 +10,8 @@ import com.project.model.User;
 import com.project.repository.ProjectRepository;
 import com.project.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,8 +26,11 @@ public class ProjectService implements IProjectService {
 
     @Override
     public ProjectDto createProject(ProjectCreateRequest request) {
-
-        User owner = userRepository.findById(request.ownerId())
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+        User owner = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Project project = Project.builder()

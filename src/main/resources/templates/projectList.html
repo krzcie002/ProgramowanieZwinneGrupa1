@@ -88,7 +88,7 @@
     async function loadProjects() {
         const token = localStorage.getItem("accessToken");
 
-        const res = await fetch("/api/projekty", {
+        const res = await fetch("/api/projects", {
             headers: {
                 "Authorization": "Bearer " + token
             }
