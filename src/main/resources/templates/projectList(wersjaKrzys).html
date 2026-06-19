@@ -1,0 +1,196 @@
+<!DOCTYPE HTML>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista projektów</title>
+    <link href="/css/style.css" rel="stylesheet"/>
+</head>
+<body>
+
+<div class="topbar">
+    <h2>System zarządzania projektami</h2>
+    <button class="logout-btn" onclick="logout()">Wyloguj</button>
+</div>
+
+<div class="root">
+    <div class="header-section">
+        <h1>Lista projektów</h1>
+        <div>
+            <button id="add-project-btn" class="btn btn-success hidden" onclick="openProjectModal()">+ Dodaj projekt</button>
+        </div>
+    </div>
+
+    <div class="controls">
+        <input type="text" id="search-input" placeholder="Szukaj projektu...">
+        <select id="status-filter">
+            <option value="">Wszystkie statusy</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="completed">Completed</option>
+        </select>
+        <button class="btn btn-primary" onclick="loadProjects(0)">Szukaj</button>
+    </div>
+
+    <table id="projects-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nazwa</th>
+                <th>Opis</th>
+                <th>Status</th>
+                <th>Utworzony</th>
+            </tr>
+        </thead>
+        <tbody id="projekty-body">
+            </tbody>
+    </table>
+
+    <div class="pagination" id="pagination-controls"></div>
+</div>
+
+<div id="project-modal" class="modal hidden">
+    <div class="modal-content">
+        <h2 id="modal-title">Dodaj Projekt</h2>
+        <div class="form-group">
+            <label>Nazwa projektu</label>
+            <input type="text" id="proj-name">
+        </div>
+        <div class="form-group">
+            <label>Opis</label>
+            <textarea id="proj-desc" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Status</label>
+            <select id="proj-status">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="completed">Completed</option>
+            </select>
+        </div>
+        <button class="btn btn-success" onclick="saveProject()">Zapisz</button>
+        <button class="btn btn-danger" onclick="closeModal('project-modal')">Anuluj</button>
+    </div>
+</div>
+
+<script>
+    let currentUserRole = 'student'; 
+    let currentPage = 0;
+    const pageSize = 10;
+
+    async function apiFetch(url, options = {}) {
+        const token = localStorage.getItem("accessToken");
+        if (!token) { window.location.href = "/login"; return null; }
+        
+        const headers = {
+            "Authorization": "Bearer " + token,
+            "Content-Type": "application/json",
+            ...options.headers
+        };
+        const res = await fetch(url, { ...options, headers });
+        
+        if (res.status === 401) { logout(); return null; }
+        if (!res.ok) throw new Error(`Błąd API: ${res.status}`);
+        // Zwraca JSON lub tekst jeśli odp. jest pusta
+        const text = await res.text();
+        return text ? JSON.parse(text) : {}; 
+    }
+
+    async function checkAuth() {
+        try {
+            const user = await apiFetch("/api/users/me");
+            if(user) {
+                currentUserRole = user.role; // np. 'student', 'prowadzacy', 'admin'
+                if(currentUserRole === 'prowadzacy' || currentUserRole === 'admin') {
+                    document.getElementById('add-project-btn').classList.remove('hidden');
+                }
+                return true;
+            }
+        } catch (e) {
+            console.error("Auth failed", e);
+            logout();
+        }
+        return false;
+    }
+
+    async function loadProjects(page = 0) {
+        currentPage = page;
+        const search = document.getElementById("search-input").value;
+        const status = document.getElementById("status-filter").value;
+        
+        try {
+            const query = `?page=${page}&size=${pageSize}&search=${encodeURIComponent(search)}&status=${status}`;
+            const response = await apiFetch(`/api/projects${query}`);
+            
+            // Oczekiwany format odp: { content: [...], totalPages: X } wg Spring Data
+            const projekty = response.content || response; 
+            const tbody = document.getElementById("projekty-body");
+            
+            tbody.innerHTML = projekty.map(p => `
+                <tr class="clickable-row" onclick="goToDetails(${p.id})">
+                    <td>${p.id}</td>
+                    <td>${p.name}</td>
+                    <td>${p.description || ""}</td>
+                    <td>${p.status}</td>
+                    <td>${new Date(p.createdAt).toLocaleDateString()}</td>
+                </tr>
+            `).join("");
+
+            if (response.totalPages) renderPagination(response.totalPages);
+
+        } catch (e) {
+            alert("Nie udało się pobrać projektów");
+        }
+    }
+
+    function renderPagination(totalPages) {
+        const pag = document.getElementById("pagination-controls");
+        let html = '';
+        for(let i=0; i<totalPages; i++) {
+            html += `<button class="btn ${i === currentPage ? 'btn-primary' : ''}" onclick="loadProjects(${i})">${i+1}</button>`;
+        }
+        pag.innerHTML = html;
+    }
+
+    function goToDetails(id) {
+        window.location.href = `/projectDetails.html?id=${id}`;
+    }
+
+    function logout() {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        window.location.href = "/login";
+    }
+
+    function openProjectModal() {
+        document.getElementById('proj-name').value = '';
+        document.getElementById('proj-desc').value = '';
+        document.getElementById('proj-status').value = 'active';
+        document.getElementById('project-modal').classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).classList.add('hidden');
+    }
+
+    async function saveProject() {
+        const payload = {
+            name: document.getElementById('proj-name').value,
+            description: document.getElementById('proj-desc').value,
+            status: document.getElementById('proj-status').value
+        };
+        try {
+            await apiFetch('/api/projects', { method: 'POST', body: JSON.stringify(payload) });
+            closeModal('project-modal');
+            loadProjects(0);
+        } catch(e) { alert("Błąd podczas zapisywania projektu"); }
+    }
+
+    (async function init() {
+        if (await checkAuth()) {
+            await loadProjects();
+        }
+    })();
+</script>
+
+</body>
+</html>
