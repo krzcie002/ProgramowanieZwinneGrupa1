@@ -16,7 +16,7 @@
 
         <h1>Rejestracja</h1>
 
-        <form th:action="@{/register}" method="post">
+        <form onsubmit="register(event)">
 
             <div class="form-group">
 
@@ -82,8 +82,7 @@
                 <input type="email"
                        name="email"
                        value="login@pbs.edu.pl"
-                       required
-                       pattern="^[A-Za-z0-9+_.-]+@pbs.edu.pl$"/>
+                       required/>
 
             </div>
 
@@ -119,4 +118,40 @@
 </div>
 
 </body>
+
+<script>
+    async function register(e) {
+        e.preventDefault();
+
+        const firstName = document.querySelector("input[name='imie']").value;
+        const lastName = document.querySelector("input[name='nazwisko']").value;
+        const index = document.querySelector("input[name='nrIndeksu']").value;
+        const email = document.querySelector("input[name='email']").value;
+        const password = document.querySelector("input[name='password']").value;
+
+        const request = {
+            index,
+            email,
+            password,
+            firstName,
+            lastName
+        };
+
+        const response = await fetch("/api/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(request)
+        });
+
+        if (response.ok) {
+            alert("Rejestracja zakończona sukcesem!");
+            window.location.href = "/login";
+        } else {
+            const msg = await response.text();
+            alert("Błąd rejestracji: " + msg);
+        }
+    }
+</script>
 </html>

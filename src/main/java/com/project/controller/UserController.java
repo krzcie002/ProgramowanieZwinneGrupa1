@@ -6,6 +6,7 @@ import com.project.dto.UserUpdateRequest;
 import com.project.model.User;
 import com.project.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,5 +42,10 @@ public class UserController {
     @GetMapping("/{id}")
     public UserDto getUserById(@PathVariable Integer id) {
         return userService.getUserById(id);
+    }
+
+    @GetMapping("/me")
+    public UserDto getCurrentUser(Authentication authentication) {
+        return userService.getCurrentUser(authentication.getName());
     }
 }

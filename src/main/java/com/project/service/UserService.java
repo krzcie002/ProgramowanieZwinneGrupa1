@@ -27,6 +27,7 @@ public class UserService implements IUserService {
         }
 
         User user = User.builder()
+                .id(request.index())
                 .email(request.email())
                 .passwordHash(passwordEncoder.encode(request.password()))
                 .firstName(request.firstName())
@@ -46,7 +47,6 @@ public class UserService implements IUserService {
 
         user.setFirstName(request.firstName());
         user.setLastName(request.lastName());
-        user.setRole(Role.valueOf(request.role()));
         user.setIsActive(request.isActive());
 
         return UserMapper.toDto(userRepository.save(user));
@@ -87,5 +87,13 @@ public class UserService implements IUserService {
     @Override
     public Optional<User> getUserDetailsByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public UserDto getCurrentUser(String email) {
+        return userRepository.findByEmail(email)
+                .filter(user -> !user.getIsDeleted())
+                .map(UserMapper::toDto)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }

@@ -22,15 +22,9 @@
         <h1>Lista projektów</h1>
 
         <div class="nav-links">
-            <a href="/studentList" id="studentsBtn" style="display:none">
-                Studenci
-            </a>
-
-            <a href="/zadanieList" id="tasksBtn" style="display:none">
-                Zadania
-            </a>
-
-            <a href="/projectAdd" id="addProjectBtn" style="display:none">
+            <a href="/studentList">Studenci</a>
+            <a href="/zadanieList">Zadania</a>
+            <a th:href="@{/projectAdd}">
                 Dodaj projekt
             </a>
         </div>
@@ -79,36 +73,13 @@
         });
 
         if (res.status === 401) {
-            logout();
-            return null;
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            window.location.href = "/login";
+            return false;
         }
 
-        return await res.json();
-    }
-
-    /* =========================
-       VERIFY ROLE
-    ========================= */
-    function setupPermissions(role) {
-
-        const studentsBtn = document.getElementById("studentsBtn");
-        const tasksBtn = document.getElementById("tasksBtn");
-        const addProjectBtn = document.getElementById("addProjectBtn");
-
-        if (role === "student") {
-            tasksBtn.style.display = "inline-block";
-        }
-
-        if (role === "prowadzacy") {
-            tasksBtn.style.display = "inline-block";
-            addProjectBtn.style.display = "inline-block";
-        }
-
-        if (role === "admin") {
-            studentsBtn.style.display = "inline-block";
-            tasksBtn.style.display = "inline-block";
-            addProjectBtn.style.display = "inline-block";
-        }
+        return true;
     }
 
     /* =========================
@@ -184,15 +155,10 @@
        INIT
     ========================= */
     (async function init() {
-        const user = await checkAuth();
-
-        if (!user) {
-            return;
+        const ok = await checkAuth();
+        if (ok) {
+            await loadProjects();
         }
-
-        setupPermissions(user.role);
-
-        await loadProjects();
     })();
 </script>
 

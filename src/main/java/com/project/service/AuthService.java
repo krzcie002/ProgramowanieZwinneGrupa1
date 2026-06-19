@@ -29,6 +29,7 @@ public class AuthService implements IAuthService {
     public void register(RegisterRequest request) {
 
         UserCreateRequest createRequest = new UserCreateRequest(
+                Integer.parseInt(request.getIndex()),
                 request.getEmail(),
                 request.getPassword(),
                 request.getFirstName(),

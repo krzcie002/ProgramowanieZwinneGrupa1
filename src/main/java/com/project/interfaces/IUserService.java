@@ -15,6 +15,6 @@ public interface IUserService {
     List<UserDto> getAllUsers();
     UserDto getUserById(Integer id);
     UserDto getUserByEmail(String email);
-
     Optional<User> getUserDetailsByEmail(String email);
+    UserDto getCurrentUser(String email);
 }
