@@ -1,5 +1,6 @@
 package com.project.controller;
 
+import com.project.dto.UserCreateElevatedRequest;
 import com.project.dto.UserCreateRequest;
 import com.project.dto.UserDto;
 import com.project.dto.UserUpdateRequest;
@@ -47,5 +48,10 @@ public class UserController {
     @GetMapping("/me")
     public UserDto getCurrentUser(Authentication authentication) {
         return userService.getCurrentUser(authentication.getName());
+    }
+
+    @PostMapping("/admin")
+    public UserDto createElevatedUser(@RequestBody UserCreateElevatedRequest request) {
+        return userService.createElevatedUser(request);
     }
 }

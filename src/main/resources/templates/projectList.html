@@ -26,7 +26,7 @@
                 Studenci
             </a>
 
-            <a href="/zadanieList" id="tasksBtn" style="display:none">
+            <a href="/taskList" id="tasksBtn" style="display:none">
                 Zadania
             </a>
 
@@ -46,7 +46,7 @@
                 <th>Opis</th>
                 <th>Utworzony</th>
                 <th>Zmodyfikowany</th>
-                <th>Termin</th>
+                <th>Twórca</th>
                 <th>Akcje</th>
             </tr>
             </thead>
@@ -90,7 +90,6 @@
        VERIFY ROLE
     ========================= */
     function setupPermissions(role) {
-
         const studentsBtn = document.getElementById("studentsBtn");
         const tasksBtn = document.getElementById("tasksBtn");
         const addProjectBtn = document.getElementById("addProjectBtn");
@@ -109,6 +108,41 @@
             tasksBtn.style.display = "inline-block";
             addProjectBtn.style.display = "inline-block";
         }
+    }
+
+    /* =========================
+       ACTION BUTTONS
+    ========================= */
+    function editProject(id) {
+        window.location.href = "/projectEdit?id=" + id;
+    }
+
+    async function deleteProject(id) {
+
+        if (!confirm("Czy na pewno usunąć projekt?")) {
+            return;
+        }
+
+        const token = localStorage.getItem("accessToken");
+
+        const res = await fetch("/api/projects/" + id, {
+            method: "DELETE",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        if (res.status === 401) {
+            logout();
+            return;
+        }
+
+        if (!res.ok) {
+            alert("Nie udało się usunąć projektu.");
+            return;
+        }
+
+        await loadProjects();
     }
 
     /* =========================
@@ -146,13 +180,12 @@
             <td>${p.status}</td>
             <td>${p.ownerId ?? "-"}</td>
             <td class="actions">
-                <a href="/projektEdit?projektId=${p.projektId}">
+                <button onclick="editProject(${p.id})">
                     Edytuj
-                </a>
-
-                <a href="/projektEdit?projektId=${p.projektId}&delete=true">
+                </button>
+                <button onclick="deleteProject(${p.id})">
                     Usuń
-                </a>
+                </button>
             </td>
         </tr>
     `).join("");

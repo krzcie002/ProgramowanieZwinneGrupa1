@@ -41,6 +41,27 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public UserDto createElevatedUser(UserCreateElevatedRequest request) {
+
+        if (userRepository.existsByEmail(request.email())) {
+            throw new RuntimeException("Email already exists");
+        }
+
+        User user = User.builder()
+                .id(request.index())
+                .email(request.email())
+                .passwordHash(passwordEncoder.encode(request.password()))
+                .firstName(request.firstName())
+                .lastName(request.lastName())
+                .role(request.role())
+                .isActive(true)
+                .isDeleted(false)
+                .build();
+
+        return UserMapper.toDto(userRepository.save(user));
+    }
+
+    @Override
     public UserDto updateUser(Integer id, UserUpdateRequest request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));

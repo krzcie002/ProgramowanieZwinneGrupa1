@@ -47,6 +47,9 @@ public class SecurityWebConfig {
                         // auth endpoints
                         .requestMatchers("/api/login", "/api/register", "/api/refresh").permitAll()
 
+                        // getting details of logged in user
+                        .requestMatchers("/api/users/me").authenticated()
+
                         // protected API
                         .requestMatchers("/api/users/**").hasAuthority("ADMIN")
                         .requestMatchers("/api/**").authenticated()
