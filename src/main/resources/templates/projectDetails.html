@@ -1,0 +1,273 @@
+<!DOCTYPE HTML>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Szczegóły Projektu</title>
+    <link href="/css/style.css" rel="stylesheet"/>
+</head>
+<body>
+
+<div class="topbar">
+    <h2>System zarządzania projektami</h2>
+    <div>
+        <button class="btn btn-primary" onclick="window.location.href='/projectList.html'">Wróć do listy</button>
+        <button class="logout-btn" onclick="logout()">Wyloguj</button>
+    </div>
+</div>
+
+<div class="root">
+    <div class="header-section">
+        <h1 id="p-name">Ładowanie...</h1>
+        <div id="project-actions" class="hidden">
+            <button class="btn btn-warning" onclick="openEditProjectModal()">Edytuj Projekt</button>
+            <button class="btn btn-danger" onclick="deleteProject()">Usuń Projekt</button>
+        </div>
+    </div>
+    <p><strong>Opis:</strong> <span id="p-desc"></span></p>
+    <p><strong>Status:</strong> <span id="p-status"></span></p>
+
+    <hr>
+
+    <div class="header-section" style="margin-top: 30px;">
+        <h2>Zadania w projekcie</h2>
+        <button class="btn btn-success" onclick="openTaskModal()">+ Dodaj Zadanie</button>
+    </div>
+    
+    <div class="scrollable-list" id="tasks-list">
+        </div>
+
+    <hr>
+
+    <div class="header-section" style="margin-top: 30px;">
+        <h2>Przypisani Studenci</h2>
+        <div id="student-actions" class="hidden">
+            <button class="btn btn-success" onclick="openStudentSearchModal()">+ Dodaj Wykonawcę</button>
+        </div>
+    </div>
+    <div class="scrollable-list" id="students-list">
+        </div>
+
+</div>
+
+<div id="task-modal" class="modal hidden">
+    <div class="modal-content">
+        <h2 id="task-modal-title">Dodaj/Edytuj Zadanie</h2>
+        <input type="hidden" id="task-id">
+        <div class="form-group">
+            <label>Tytuł</label>
+            <input type="text" id="task-title">
+        </div>
+        <div class="form-group">
+            <label>Opis</label>
+            <textarea id="task-desc" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Status</label>
+            <select id="task-status">
+                <option value="todo">To Do</option>
+                <option value="in_progress">In Progress</option>
+                <option value="done">Done</option>
+            </select>
+        </div>
+        <button class="btn btn-success" onclick="saveTask()">Zapisz</button>
+        <button class="btn btn-danger" onclick="closeModal('task-modal')">Anuluj</button>
+    </div>
+</div>
+
+<div id="student-modal" class="modal hidden">
+    <div class="modal-content">
+        <h2>Szukaj Studenta</h2>
+        <div class="controls">
+            <input type="text" id="student-search-email" placeholder="Wyszukaj po emailu...">
+            <button class="btn btn-primary" onclick="searchStudents()">Szukaj</button>
+        </div>
+        <div class="scrollable-list" id="student-search-results">
+            </div>
+        <button class="btn btn-danger" onclick="closeModal('student-modal')">Zamknij</button>
+    </div>
+</div>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectId = urlParams.get('id');
+    let currentUserRole = 'student';
+
+    // Uniwersalna funkcja do zapytań (identyczna jak w liście)
+    async function apiFetch(url, options = {}) {
+        const token = localStorage.getItem("accessToken");
+        if (!token) { window.location.href = "/login"; return null; }
+        const headers = { "Authorization": "Bearer " + token, "Content-Type": "application/json", ...options.headers };
+        const res = await fetch(url, { ...options, headers });
+        if (res.status === 401) { logout(); return null; }
+        if (!res.ok) throw new Error(`Błąd API: ${res.status}`);
+        const text = await res.text();
+        return text ? JSON.parse(text) : {};
+    }
+
+    function logout() {
+        localStorage.removeItem("accessToken"); window.location.href = "/login";
+    }
+
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+    // --- Inicjalizacja ---
+    async function init() {
+        if(!projectId) { alert("Brak ID projektu"); window.location.href="/projectList.html"; return; }
+        
+        try {
+            const user = await apiFetch("/api/users/me");
+            currentUserRole = user.role;
+            if(currentUserRole === 'prowadzacy' || currentUserRole === 'admin') {
+                document.getElementById('project-actions').classList.remove('hidden');
+                document.getElementById('student-actions').classList.remove('hidden');
+            }
+        } catch (e) { logout(); return; }
+
+        await loadProjectDetails();
+        await loadTasks();
+        await loadAssignedStudents();
+    }
+
+    // --- PROJEKT LOGIKA ---
+    async function loadProjectDetails() {
+        try {
+            const p = await apiFetch(`/api/projects/${projectId}`);
+            document.getElementById('p-name').innerText = p.name;
+            document.getElementById('p-desc').innerText = p.description || "Brak opisu";
+            document.getElementById('p-status').innerText = p.status;
+        } catch(e) { console.error(e); }
+    }
+
+    async function deleteProject() {
+        if(!confirm("Na pewno usunąć projekt?")) return;
+        try {
+            await apiFetch(`/api/projects/${projectId}`, { method: 'DELETE' });
+            window.location.href = "/projectList.html";
+        } catch(e) { alert("Błąd usuwania"); }
+    }
+
+    function openEditProjectModal() {
+        // Uproszczenie: na potrzeby dema przechodzimy do modala edycji na nowo. 
+        // W idealnym świecie tutaj załadowałbyś pola inputów danymi z `loadProjectDetails` 
+        // Następnie robisz PUT na /api/projects/{projectId}
+        alert("Funkcjonalność podłączania modala z danymi z GET. Zrób na wzór dodawania projektu!");
+    }
+
+    // --- ZADANIA LOGIKA (Wszyscy) ---
+    async function loadTasks() {
+        try {
+            const tasks = await apiFetch(`/api/projects/${projectId}/tasks`); // Twój endpoint
+            const list = document.getElementById("tasks-list");
+            list.innerHTML = tasks.map(t => `
+                <div class="list-item">
+                    <div>
+                        <strong>${t.title}</strong> (${t.status})<br>
+                        <small>${t.description || ''}</small>
+                    </div>
+                    <div>
+                        <button class="btn btn-warning btn-sm" onclick="editTask(${t.id}, '${t.title}', '${t.description}', '${t.status}')">Edytuj</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteTask(${t.id})">Usuń</button>
+                    </div>
+                </div>
+            `).join("");
+        } catch(e) { document.getElementById("tasks-list").innerHTML = "Brak zadań lub błąd ładowania."; }
+    }
+
+    function openTaskModal() {
+        document.getElementById('task-id').value = '';
+        document.getElementById('task-title').value = '';
+        document.getElementById('task-desc').value = '';
+        document.getElementById('task-status').value = 'todo';
+        document.getElementById('task-modal').classList.remove('hidden');
+    }
+
+    function editTask(id, title, desc, status) {
+        document.getElementById('task-id').value = id;
+        document.getElementById('task-title').value = title;
+        document.getElementById('task-desc').value = desc !== 'null' ? desc : '';
+        document.getElementById('task-status').value = status;
+        document.getElementById('task-modal').classList.remove('hidden');
+    }
+
+    async function saveTask() {
+        const id = document.getElementById('task-id').value;
+        const payload = {
+            projekt_id: projectId, // backend u Ciebie to chyba 'projekt_id' z opisu
+            title: document.getElementById('task-title').value,
+            description: document.getElementById('task-desc').value,
+            status: document.getElementById('task-status').value
+        };
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `/api/tasks/${id}` : `/api/tasks`; 
+        
+        try {
+            await apiFetch(url, { method: method, body: JSON.stringify(payload) });
+            closeModal('task-modal');
+            loadTasks();
+        } catch(e) { alert("Błąd zapisu zadania"); }
+    }
+
+    async function deleteTask(id) {
+        if(!confirm("Usunąć to zadanie?")) return;
+        try { await apiFetch(`/api/tasks/${id}`, { method: 'DELETE' }); loadTasks(); }
+        catch(e) { alert("Błąd"); }
+    }
+
+    // --- STUDENCI LOGIKA (Tylko Admin/Prowadzący) ---
+    async function loadAssignedStudents() {
+        try {
+            const students = await apiFetch(`/api/projects/${projectId}/students`);
+            const list = document.getElementById("students-list");
+            const canRemove = currentUserRole === 'prowadzacy' || currentUserRole === 'admin';
+            
+            list.innerHTML = students.map(s => `
+                <div class="list-item">
+                    <span>${s.first_name} ${s.last_name} (${s.email})</span>
+                    ${canRemove ? `<button class="btn btn-danger btn-sm" onclick="removeStudent(${s.id})">Usuń</button>` : ''}
+                </div>
+            `).join("");
+        } catch(e) { document.getElementById("students-list").innerHTML = "Brak przypisanych studentów."; }
+    }
+
+    function openStudentSearchModal() {
+        document.getElementById('student-search-results').innerHTML = '';
+        document.getElementById('student-search-email').value = '';
+        document.getElementById('student-modal').classList.remove('hidden');
+    }
+
+    async function searchStudents() {
+        const email = document.getElementById('student-search-email').value;
+        try {
+            const students = await apiFetch(`/api/users?role=student&search=${encodeURIComponent(email)}`);
+            const resBox = document.getElementById('student-search-results');
+            resBox.innerHTML = students.map(s => `
+                <div class="list-item">
+                    <span>${s.first_name} ${s.last_name} (${s.email})</span>
+                    <button class="btn btn-success btn-sm" onclick="addStudentToProject(${s.id})">Dodaj</button>
+                </div>
+            `).join("");
+        } catch(e) { alert("Błąd wyszukiwania studentów"); }
+    }
+
+    async function addStudentToProject(userId) {
+        try {
+            await apiFetch(`/api/projects/${projectId}/students/${userId}`, { method: 'POST' });
+            alert("Dodano studenta!");
+            loadAssignedStudents();
+        } catch(e) { alert("Nie udało się przypisać studenta."); }
+    }
+
+    async function removeStudent(userId) {
+        if(!confirm("Usunąć tego studenta z projektu?")) return;
+        try {
+            await apiFetch(`/api/projects/${projectId}/students/${userId}`, { method: 'DELETE' });
+            loadAssignedStudents();
+        } catch(e) { alert("Błąd usuwania studenta."); }
+    }
+
+    // Odpal start
+    init();
+</script>
+
+</body>
+</html>
