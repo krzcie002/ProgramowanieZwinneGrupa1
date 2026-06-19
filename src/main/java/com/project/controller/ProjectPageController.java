@@ -17,7 +17,7 @@ public class ProjectPageController {
     }
     @GetMapping("/projectAdd")
     public  String projectAdd(Model model){
-        model.addAttribute("projekt", new ProjectCreateRequest("", "","", null));
+        model.addAttribute("projekt", new ProjectCreateRequest("", "",""));
         return "projectAdd";
     }
     @GetMapping("/projectEdit")
