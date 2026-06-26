@@ -1,5 +1,6 @@
 package com.project.service;
 
+import com.project.dto.MemberDto;
 import com.project.interfaces.IProjectMemberService;
 import com.project.model.ProjectMember;
 import com.project.repository.ProjectMemberRepository;
@@ -42,5 +43,13 @@ public class ProjectMemberService implements IProjectMemberService {
 
         member.setRole(role);
         return repository.save(member);
+    }
+    MemberDto mapMember(ProjectMember member) {
+        return new MemberDto(
+                member.getUser().getId(),
+                member.getUser().getFirstName(),
+                member.getUser().getLastName(),
+                member.getRole()
+        );
     }
 }

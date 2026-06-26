@@ -24,4 +24,9 @@ public class ProjectPageController {
     public  String projectEdit(){
         return "projectEdit";
     }
+
+    @GetMapping("/projectDetails")
+    public String projectDetails() {
+        return "projectDetails";
+    }
 }

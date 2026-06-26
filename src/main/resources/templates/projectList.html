@@ -116,7 +116,9 @@
     function editProject(id) {
         window.location.href = "/projectEdit?id=" + id;
     }
-
+    function detailsProject(id) {
+        window.location.href = "/projectDetails.html?id=" + id;
+    }
     async function deleteProject(id) {
 
         if (!confirm("Czy na pewno usunąć projekt?")) {
@@ -182,6 +184,9 @@
             <td class="actions">
                 <button onclick="editProject(${p.id})">
                     Edytuj
+                </button>
+                <button onclick="detailsProject(${p.id})">
+                    Szczegóły
                 </button>
                 <button onclick="deleteProject(${p.id})">
                     Usuń

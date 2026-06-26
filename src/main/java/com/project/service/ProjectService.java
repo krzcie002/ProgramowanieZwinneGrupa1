@@ -1,14 +1,14 @@
 package com.project.service;
 
-import com.project.dto.ProjectCreateRequest;
-import com.project.dto.ProjectDto;
-import com.project.dto.ProjectMapper;
-import com.project.dto.ProjectUpdateRequest;
+import com.project.dto.*;
 import com.project.interfaces.IProjectService;
 import com.project.model.Project;
 import com.project.model.User;
+import com.project.repository.ProjectMemberRepository;
 import com.project.repository.ProjectRepository;
+import com.project.repository.TaskRepository;
 import com.project.repository.UserRepository;
+import com.project.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +23,8 @@ public class ProjectService implements IProjectService {
 
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+    private final ProjectMemberService projectMemberService;
+    private final TaskService taskService;
 
     @Override
     public ProjectDto createProject(ProjectCreateRequest request) {
@@ -79,5 +81,38 @@ public class ProjectService implements IProjectService {
                 .filter(p -> !p.getIsDeleted())
                 .map(ProjectMapper::toDto)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
+    }
+
+    public ProjectDetailsDto getProjectDetails(Integer projectId) {
+
+        Project project = projectRepository.findById(projectId)
+                .filter(p -> !p.getIsDeleted())
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+
+        List<MemberDto> members = projectMemberService
+                .getMembersByProject(projectId)
+                .stream()
+                .map(ProjectMemberMapper::toDto)
+                .toList();
+
+        List<TaskDto> tasks = taskService
+                .getTasksByProject(projectId)
+                .stream()
+                .map(TaskMapper::toDto)
+                .toList();
+
+        return new ProjectDetailsDto(
+                project.getId(),
+                project.getName(),
+                project.getDescription(),
+                project.getStatus(),
+                new OwnerDto(
+                        project.getOwner().getId(),
+                        project.getOwner().getFirstName(),
+                        project.getOwner().getLastName()
+                ),
+                members,
+                tasks
+        );
     }
 }

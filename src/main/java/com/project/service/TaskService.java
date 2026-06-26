@@ -1,5 +1,6 @@
 package com.project.service;
 
+import com.project.dto.TaskDto;
 import com.project.interfaces.ITaskService;
 import com.project.model.Task;
 import com.project.model.TaskStatus;
@@ -67,5 +68,13 @@ public class TaskService implements ITaskService {
         task.setStatus(TaskStatus.valueOf(status));
 
         return taskRepository.save(task);
+    }
+    private TaskDto mapTask(Task task) {
+        return new TaskDto(
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getStatus().name()
+        );
     }
 }

@@ -1,11 +1,13 @@
 package com.project.controller;
 
 import com.project.dto.ProjectCreateRequest;
+import com.project.dto.ProjectDetailsDto;
 import com.project.dto.ProjectDto;
 import com.project.dto.ProjectUpdateRequest;
 import com.project.model.Project;
 import com.project.service.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,5 +47,9 @@ public class ProjectController {
     @GetMapping("/{id}")
     public ProjectDto getProjectById(@PathVariable Integer id) {
         return projectService.getProjectById(id);
+    }
+    @GetMapping("/{id}/details")
+    public ResponseEntity<ProjectDetailsDto> getProjectDetails(@PathVariable Integer id) {
+        return ResponseEntity.ok(projectService.getProjectDetails(id));
     }
 }

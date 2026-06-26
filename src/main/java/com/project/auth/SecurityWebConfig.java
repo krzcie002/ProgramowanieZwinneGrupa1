@@ -55,7 +55,7 @@ public class SecurityWebConfig {
                         .requestMatchers("/api/**").authenticated()
 
                         // pages
-                        .requestMatchers("/", "/login", "/register", "/projectList", "/projectAdd", "/projectEdit").permitAll()
+                        .requestMatchers("/", "/login", "/register", "/projectList", "/projectAdd", "/projectEdit", "/projectDetails").permitAll()
 
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
