@@ -22,8 +22,8 @@
         <h1>Lista projektów</h1>
 
         <div class="nav-links">
-            <a href="/studentList" id="studentsBtn" style="display:none">
-                Studenci
+            <a href="/userList" id="usersBtn" style="display:none">
+                Użytkownicy
             </a>
 
             <a href="/taskList" id="tasksBtn" style="display:none">
@@ -90,7 +90,7 @@
        VERIFY ROLE
     ========================= */
     function setupPermissions(role) {
-        const studentsBtn = document.getElementById("studentsBtn");
+        const usersBtn = document.getElementById("usersBtn");
         const tasksBtn = document.getElementById("tasksBtn");
         const addProjectBtn = document.getElementById("addProjectBtn");
 
@@ -104,7 +104,7 @@
         }
 
         if (role === "admin") {
-            studentsBtn.style.display = "inline-block";
+            usersBtn.style.display = "inline-block";
             tasksBtn.style.display = "inline-block";
             addProjectBtn.style.display = "inline-block";
         }

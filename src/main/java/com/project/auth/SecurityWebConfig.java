@@ -29,6 +29,7 @@ public class SecurityWebConfig {
                 .authorizeHttpRequests(auth -> auth
                         // public static resources
                         .requestMatchers("/css/**").permitAll()
+                        .requestMatchers("/**/*.ico").permitAll()
 
                         // swagger
                         .requestMatchers(
@@ -51,11 +52,11 @@ public class SecurityWebConfig {
                         .requestMatchers("/api/users/me").authenticated()
 
                         // protected API
-                        .requestMatchers("/api/users/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/users/**").hasRole("admin")
                         .requestMatchers("/api/**").authenticated()
 
                         // pages
-                        .requestMatchers("/", "/login", "/register", "/projectList", "/projectAdd", "/projectEdit", "/projectDetails").permitAll()
+                        .requestMatchers("/", "/login", "/register", "/projectList", "/projectAdd", "/projectEdit", "/projectDetails", "/userList").permitAll()
 
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
