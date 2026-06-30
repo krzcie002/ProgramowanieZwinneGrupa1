@@ -20,6 +20,7 @@ public class TaskService implements ITaskService {
 
     @Override
     public Task createTask(Task task) {
+        task.setIsDeleted(false);
         return taskRepository.save(task);
     }
 
@@ -37,7 +38,7 @@ public class TaskService implements ITaskService {
 
     @Override
     public void deleteTask(Integer id) {
-        Task task = getTaskById(id)
+        Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
         task.setIsDeleted(true);
         taskRepository.save(task);
@@ -59,7 +60,7 @@ public class TaskService implements ITaskService {
 
     @Override
     public List<Task> getTasksByProject(Integer project_id) {
-        return taskRepository.findByProjectId(project_id);
+        return taskRepository.findByProject_IdAndIsDeletedFalse(project_id);
     }
 
     @Override

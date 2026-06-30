@@ -281,7 +281,7 @@
     async function addStudentToProject(userId) {
         try {
             // Adres POST z wersji Twojego kolegi
-            await apiFetch(`/api/projects/${projectId}/students/${userId}`, { method: 'POST' });
+            await apiFetch(`/api/project-members/${projectId}/students/${userId}`, { method: 'POST' });
             alert("Dodano studenta!");
             closeModal('student-modal');
             await loadProjectDetails();
@@ -292,7 +292,7 @@
         if(!confirm("Usunąć tego studenta z projektu?")) return;
         try {
             // Adres DELETE z wersji Twojego kolegi
-            await apiFetch(`/api/projects/${projectId}/students/${userId}`, { method: 'DELETE' });
+            await apiFetch(`/api/project-members/${projectId}/students/${userId}`, { method: 'DELETE' });
             await loadProjectDetails();
         } catch(e) { alert("Błąd usuwania studenta."); }
     }

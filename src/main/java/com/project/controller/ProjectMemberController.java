@@ -19,6 +19,12 @@ public class ProjectMemberController {
         return service.addMember(member);
     }
 
+    @PostMapping("/{projectId}/students/{userId}")
+    public ProjectMember addMember(@PathVariable Integer projectId,
+                                   @PathVariable Integer userId) {
+        return service.addMember(projectId, userId);
+    }
+
     @GetMapping("/project/{projectId}")
     public List<ProjectMember> getMembersByProject(@PathVariable Integer projectId) {
         return service.getMembersByProject(projectId);
@@ -37,5 +43,10 @@ public class ProjectMemberController {
     @DeleteMapping("/{id}")
     public void removeMember(@PathVariable Integer id) {
         service.removeMember(id);
+    }
+    @DeleteMapping("/{projectId}/students/{userId}")
+    public void removeMember(@PathVariable Integer projectId,
+                             @PathVariable Integer userId) {
+        service.removeMember(projectId,userId);
     }
 }
