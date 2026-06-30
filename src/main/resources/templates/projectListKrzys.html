@@ -9,7 +9,13 @@
 
 <div class="topbar">
     <h2>System zarządzania projektami</h2>
-    <button class="logout-btn" onclick="logout()">Wyloguj</button>
+
+    <div>
+        <button id="users-btn" class="btn btn-primary hidden" onclick="goToUsers()">
+            Użytkownicy
+        </button>
+        <button class="logout-btn" onclick="logout()">Wyloguj</button>
+    </div>
 </div>
 
 <div class="root">
@@ -112,6 +118,7 @@
                 if(currentUserRole === 'prowadzacy' || currentUserRole === 'admin') {
                     document.getElementById('add-project-btn').classList.remove('hidden');
                     document.getElementById('actions-header').classList.remove('hidden');
+                    document.getElementById('users-btn').classList.remove('hidden');
                 }
                 return true;
             }
@@ -212,7 +219,9 @@
     function goToDetails(id) {
         window.location.href = `/projectDetails?id=${id}`;
     }
-
+    function goToUsers() {
+        window.location.href = "/userList";
+    }
     function logout() {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");

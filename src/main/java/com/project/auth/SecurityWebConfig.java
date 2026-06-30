@@ -76,7 +76,8 @@ public class SecurityWebConfig {
                                 "/projectAdd",
                                 "/projectList(wersjaKrzys)", // <-- NOWE
                                 "/projectDetails",
-                                "/projectEdit"
+                                "/projectEdit",
+                                "/userList"
                         ).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
