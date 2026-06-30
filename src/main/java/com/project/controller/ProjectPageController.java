@@ -11,6 +11,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 public class ProjectPageController {
+
+    @GetMapping("/projectList(wersjaKrzys)")
+    public String projectListKrzys() {
+        return "projectListKrzys"; // Spring dopasuje to do pliku projectListKrzys.html
+    }
+
+
+    @GetMapping("/projectDetails")
+    public String projectDetails() {
+        return "projectDetails"; // Spring dopasuje to do pliku projectDetails.html
+    }
+
+
     @GetMapping("/projectList")
     public String projectList() {
         return "projectList";
@@ -25,8 +38,4 @@ public class ProjectPageController {
         return "projectEdit";
     }
 
-    @GetMapping("/projectDetails")
-    public String projectDetails() {
-        return "projectDetails";
-    }
 }

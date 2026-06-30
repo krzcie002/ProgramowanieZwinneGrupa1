@@ -1,0 +1,288 @@
+<!DOCTYPE HTML>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista projektów</title>
+    <link href="/css/style.css" rel="stylesheet"/>
+</head>
+<body>
+
+<div class="topbar">
+    <h2>System zarządzania projektami</h2>
+    <button class="logout-btn" onclick="logout()">Wyloguj</button>
+</div>
+
+<div class="root">
+    <div class="header-section">
+        <h1>Lista projektów</h1>
+        <div>
+            <button id="add-project-btn" class="btn btn-success hidden" onclick="openProjectModal()">+ Dodaj projekt</button>
+        </div>
+    </div>
+
+    <div class="controls">
+        <input type="text" id="search-input" placeholder="Szukaj po nazwie...">
+        <select id="status-filter">
+            <option value="">Wszystkie statusy</option>
+            <option value="active">Aktywny (Active)</option>
+            <option value="inactive">Nieaktywny (Inactive)</option>
+            <option value="completed">Zakończony (Completed)</option>
+        </select>
+        <button class="btn btn-primary" onclick="loadProjects(0)">Filtruj / Szukaj</button>
+    </div>
+
+    <div class="table-container">
+        <table id="projects-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nazwa</th>
+                <th>Opis</th>
+                <th>Status</th>
+                <th>Utworzony</th>
+                <th id="actions-header" class="hidden">Akcje</th>
+            </tr>
+            </thead>
+            <tbody id="projekty-body">
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination" id="pagination-controls"></div>
+</div>
+
+<div id="project-modal" class="modal hidden">
+    <div class="modal-content">
+        <h2 id="modal-title">Projekt</h2>
+        <input type="hidden" id="proj-id">
+        <div class="form-group">
+            <label>Nazwa projektu</label>
+            <input type="text" id="proj-name" placeholder="Wpisz nazwę...">
+        </div>
+        <div class="form-group">
+            <label>Opis</label>
+            <textarea id="proj-desc" rows="3" placeholder="Krótki opis..."></textarea>
+        </div>
+        <div class="form-group">
+            <label>Status</label>
+            <select id="proj-status">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="completed">Completed</option>
+            </select>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-danger" onclick="closeModal('project-modal')">Anuluj</button>
+            <button class="btn btn-success" onclick="saveProject()">Zapisz</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentUserRole = 'student';
+    let currentPage = 0;
+    const pageSize = 10;
+
+    // --- KLUCZOWA ZMIANA ---
+    let allProjectsFromBackend = []; // Tu przechowamy kompletną listę z bazy
+    let filteredProjects = [];       // Tu przechowamy to, co pasuje do filtrów
+
+    async function apiFetch(url, options = {}) {
+        const token = localStorage.getItem("accessToken");
+        if (!token) { window.location.href = "/login"; return null; }
+
+        const headers = {
+            "Authorization": "Bearer " + token,
+            "Content-Type": "application/json",
+            ...options.headers
+        };
+        const res = await fetch(url, { ...options, headers });
+
+        if (res.status === 401) { logout(); return null; }
+        if (!res.ok) throw new Error(`Błąd API: ${res.status}`);
+        const text = await res.text();
+        return text ? JSON.parse(text) : {};
+    }
+
+    async function checkAuth() {
+        try {
+            const user = await apiFetch("/api/users/me");
+            if(user) {
+                currentUserRole = user.role;
+                if(currentUserRole === 'prowadzacy' || currentUserRole === 'admin') {
+                    document.getElementById('add-project-btn').classList.remove('hidden');
+                    document.getElementById('actions-header').classList.remove('hidden');
+                }
+                return true;
+            }
+        } catch (e) {
+            console.error("Auth failed", e);
+            logout();
+        }
+        return false;
+    }
+
+    // Pobieramy wszystko RAZ przy uruchomieniu strony
+    async function loadProjects() {
+        try {
+            // Pobieramy całą listę bez parametrów stronicowania (zakładamy czystą listę lub obiekt z content)
+            const response = await apiFetch(`/api/projects`);
+
+            // Obsługa na wypadek gdyby backend zwracał opakowane w Page { content: [] }
+            allProjectsFromBackend = response.content || response || [];
+
+            // Po pobraniu od razu uruchamiamy filtr (który na starcie pokaże wszystko)
+            filterAndRender();
+        } catch (e) {
+            console.error("Błąd pobierania projektów:", e);
+            alert("Nie udało się pobrać projektów z bazy.");
+        }
+    }
+
+    // --- FUNKCJA FILTRUJĄCA PO STRONIE KLIENTA ---
+    function filterAndRender(page = 0) {
+        currentPage = page;
+        const searchWord = document.getElementById("search-input").value.toLowerCase().trim();
+        const statusFilter = document.getElementById("status-filter").value.toLowerCase();
+
+        // Filtrujemy tablicę w pamięci RAM przeglądarki
+        filteredProjects = allProjectsFromBackend.filter(p => {
+            const matchesSearch = p.name.toLowerCase().includes(searchWord) ||
+                                  (p.description && p.description.toLowerCase().includes(searchWord));
+
+            const matchesStatus = statusFilter === "" ||
+                                  (p.status && p.status.toLowerCase() === statusFilter);
+
+            return matchesSearch && matchesStatus;
+        });
+
+        // Wyświetlamy przefiltrowane wyniki z uwzględnieniem podziału na strony (paginacji)
+        renderTablePage();
+    }
+
+    // Renderowanie konkretnej strony lokalnej tablicy
+    function renderTablePage() {
+        const tbody = document.getElementById("projekty-body");
+        const canEdit = currentUserRole === 'prowadzacy' || currentUserRole === 'admin';
+
+        if (filteredProjects.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="${canEdit ? 6 : 5}" style="text-align:center;">Brak projektów spełniających kryteria (Filtry lokalne).</td></tr>`;
+            document.getElementById("pagination-controls").innerHTML = "";
+            return;
+        }
+
+        // Logika wycinania kawałka tablicy (np. od indeksu 0 do 10 dla strony 1)
+        const start = currentPage * pageSize;
+        const end = start + pageSize;
+        const projectsToDisplay = filteredProjects.slice(start, end);
+
+        tbody.innerHTML = projectsToDisplay.map(p => `
+            <tr class="clickable-row" onclick="goToDetails(${p.id})">
+                <td>${p.id}</td>
+                <td><strong>${p.name}</strong></td>
+                <td>${p.description || "-"}</td>
+                <td><span class="badge ${p.status ? p.status.toLowerCase() : 'active'}">${p.status || 'ACTIVE'}</span></td>
+                <td>${p.createdAt ? new Date(p.createdAt).toLocaleDateString() : '-'}</td>
+                ${canEdit ? `
+                <td class="actions-cell">
+                    <button class="btn btn-warning btn-sm" onclick="event.stopPropagation(); initEditProject(${p.id})">Edytuj</button>
+                    <button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteProject(${p.id})">Usuń</button>
+                </td>` : ''}
+            </tr>
+        `).join("");
+
+        // Generujemy paginację na podstawie rozmiaru przefiltrowanej tablicy
+        const totalPages = Math.ceil(filteredProjects.length / pageSize);
+        renderPagination(totalPages);
+    }
+
+    function renderPagination(totalPages) {
+        const pag = document.getElementById("pagination-controls");
+        if(totalPages <= 1) {
+            pag.innerHTML = "";
+            return;
+        }
+        let html = '';
+        for(let i=0; i<totalPages; i++) {
+            html += `<button class="btn ${i === currentPage ? 'btn-primary' : 'btn-warning'}" onclick="filterAndRender(${i})">${i+1}</button>`;
+        }
+        pag.innerHTML = html;
+    }
+
+    function goToDetails(id) {
+        window.location.href = `/projectDetails?id=${id}`;
+    }
+
+    function logout() {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        window.location.href = "/login";
+    }
+
+    function openProjectModal() {
+        document.getElementById('modal-title').innerText = 'Dodaj Projekt';
+        document.getElementById('proj-id').value = '';
+        document.getElementById('proj-name').value = '';
+        document.getElementById('proj-desc').value = '';
+        document.getElementById('proj-status').value = 'active';
+        document.getElementById('project-modal').classList.remove('hidden');
+    }
+
+    function initEditProject(id) {
+        const project = allProjectsFromBackend.find(p => p.id === id);
+        if (!project) return;
+
+        document.getElementById('modal-title').innerText = 'Edytuj Projekt';
+        document.getElementById('proj-id').value = project.id;
+        document.getElementById('proj-name').value = project.name;
+        document.getElementById('proj-desc').value = project.description || '';
+        document.getElementById('proj-status').value = project.status || 'active';
+        document.getElementById('project-modal').classList.remove('hidden');
+    }
+
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+    async function saveProject() {
+        const id = document.getElementById('proj-id').value;
+        const payload = {
+            name: document.getElementById('proj-name').value,
+            description: document.getElementById('proj-desc').value,
+            status: document.getElementById('proj-status').value
+        };
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `/api/projects/${id}` : '/api/projects';
+
+        try {
+            await apiFetch(url, { method: method, body: JSON.stringify(payload) });
+            closeModal('project-modal');
+            // Po zapisie wymuszamy ponowne pobranie z bazy danych
+            await loadProjects();
+        } catch(e) {
+            console.error(e);
+            alert("Błąd podczas zapisywania projektu.");
+        }
+    }
+
+    async function deleteProject(id) {
+        if(!confirm("Czy na pewno chcesz usunąć ten projekt?")) return;
+        try {
+            await apiFetch(`/api/projects/${id}`, { method: 'DELETE' });
+            await loadProjects();
+        } catch(e) { alert("Nie udało się usunąć projektu"); }
+    }
+
+    // Podpinamy naszą funkcję pod przycisk "Szukaj" z Twojego HTML
+    // Dodatkowo podmieniamy wywołanie w init:
+    (async function init() {
+        if (await checkAuth()) {
+            // Podmiana akcji przycisku Szukaj, żeby odpalał filtrowanie lokalne
+            const searchBtn = document.querySelector(".controls .btn-primary");
+            if(searchBtn) {
+                searchBtn.setAttribute("onclick", "filterAndRender(0)");
+            }
+            await loadProjects();
+        }
+    })();
+</script>
+</body>
+</html>

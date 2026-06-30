@@ -28,7 +28,15 @@ public class SecurityWebConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         // public static resources
-                        .requestMatchers("/css/**").permitAll()
+                        .requestMatchers("/css/**",
+                                "/",
+                                "/login",
+                                "/*.html",
+                                "/resources/templates/**",
+                                "/templates/**",
+                                "/js/**",
+                                "/favicon.ico").permitAll()
+
 
                         // swagger
                         .requestMatchers(
@@ -55,8 +63,19 @@ public class SecurityWebConfig {
                         .requestMatchers("/api/**").authenticated()
 
                         // pages
-                        .requestMatchers("/", "/login", "/register", "/projectList", "/projectAdd", "/projectEdit", "/projectDetails").permitAll()
-
+// pages
+                        .requestMatchers(
+                                "/",
+                                "/login",
+                                "/register",
+                                "/projectList",
+                                "/projectList*",              // <--- To wpuści /projectList(wersjaKrzys)
+                                "/projectDetails*",           // <--- To wpuści /projectDetails lub /projectDetails.html
+                                "/projectAdd",
+                                "/projectList(wersjaKrzys)", // <-- NOWE
+                                "/projectDetails",
+                                "/projectEdit"
+                        ).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

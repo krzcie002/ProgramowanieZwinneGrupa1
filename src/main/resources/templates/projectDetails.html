@@ -8,50 +8,49 @@
 <body>
 
 <div class="topbar">
-    <h2>System zarządzania projektami</h2>
+    <h2>Szczegóły projektu</h2>
     <div>
-        <button class="btn btn-primary" onclick="window.location.href='/projectList.html'">Wróć do listy</button>
+        <button class="btn btn-primary" onclick="window.location.href='/projectList(wersjaKrzys)'">← Wróć do listy</button>
         <button class="logout-btn" onclick="logout()">Wyloguj</button>
     </div>
 </div>
 
 <div class="root">
     <div class="header-section">
-        <h1 id="p-name">Ładowanie...</h1>
-        <div id="project-actions" class="hidden">
-            <button class="btn btn-warning" onclick="openEditProjectModal()">Edytuj Projekt</button>
-            <button class="btn btn-danger" onclick="deleteProject()">Usuń Projekt</button>
+        <div>
+            <h1 id="p-name">Ładowanie...</h1>
+            <p style="color: #666; margin-top: 5px;" id="p-desc"></p>
+            <span id="p-status" class="badge"></span>
         </div>
     </div>
-    <p><strong>Opis:</strong> <span id="p-desc"></span></p>
-    <p><strong>Status:</strong> <span id="p-status"></span></p>
 
-    <hr>
+    <div class="grid-container">
+        <div>
+            <div class="header-section" style="padding: 15px;">
+                <h2>Zadania</h2>
+                <button class="btn btn-success" onclick="openTaskModal()">+ Dodaj Zadanie</button>
+            </div>
 
-    <div class="header-section" style="margin-top: 30px;">
-        <h2>Zadania w projekcie</h2>
-        <button class="btn btn-success" onclick="openTaskModal()">+ Dodaj Zadanie</button>
+            <div class="scrollable-list" id="tasks-list">
+            </div>
+        </div>
+
+        <div>
+            <div class="header-section" style="padding: 15px;">
+                <h2>Przypisani Studenci</h2>
+                <div id="student-actions" class="hidden">
+                    <button class="btn btn-success" onclick="openStudentSearchModal()">+ Dodaj Wykonawcę</button>
+                </div>
+            </div>
+            <div class="scrollable-list" id="students-list">
+            </div>
+        </div>
     </div>
-    
-    <div class="scrollable-list" id="tasks-list">
-        </div>
-
-    <hr>
-
-    <div class="header-section" style="margin-top: 30px;">
-        <h2>Przypisani Studenci</h2>
-        <div id="student-actions" class="hidden">
-            <button class="btn btn-success" onclick="openStudentSearchModal()">+ Dodaj Wykonawcę</button>
-        </div>
-    </div>
-    <div class="scrollable-list" id="students-list">
-        </div>
-
 </div>
 
 <div id="task-modal" class="modal hidden">
     <div class="modal-content">
-        <h2 id="task-modal-title">Dodaj/Edytuj Zadanie</h2>
+        <h2 id="task-modal-title">Zadanie</h2>
         <input type="hidden" id="task-id">
         <div class="form-group">
             <label>Tytuł</label>
@@ -64,26 +63,30 @@
         <div class="form-group">
             <label>Status</label>
             <select id="task-status">
-                <option value="todo">To Do</option>
-                <option value="in_progress">In Progress</option>
-                <option value="done">Done</option>
+                <option value="todo">Do zrobienia (To Do)</option>
+                <option value="in_progress">W trakcie (In Progress)</option>
+                <option value="done">Zakończone (Done)</option>
             </select>
         </div>
-        <button class="btn btn-success" onclick="saveTask()">Zapisz</button>
-        <button class="btn btn-danger" onclick="closeModal('task-modal')">Anuluj</button>
+        <div class="modal-actions">
+            <button class="btn btn-danger" onclick="closeModal('task-modal')">Anuluj</button>
+            <button class="btn btn-success" onclick="saveTask()">Zapisz</button>
+        </div>
     </div>
 </div>
 
 <div id="student-modal" class="modal hidden">
     <div class="modal-content">
         <h2>Szukaj Studenta</h2>
-        <div class="controls">
-            <input type="text" id="student-search-email" placeholder="Wyszukaj po emailu...">
+        <div class="controls" style="margin-bottom: 10px;">
+            <input type="text" id="student-search-email" placeholder="Email studenta..." style="width: 100%;">
             <button class="btn btn-primary" onclick="searchStudents()">Szukaj</button>
         </div>
-        <div class="scrollable-list" id="student-search-results">
-            </div>
-        <button class="btn btn-danger" onclick="closeModal('student-modal')">Zamknij</button>
+        <div class="scrollable-list" id="student-search-results" style="max-height: 200px;">
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-danger" onclick="closeModal('student-modal')">Zamknij</button>
+        </div>
     </div>
 </div>
 
@@ -93,7 +96,7 @@
     const projectId = urlParams.get('id');
     let currentUserRole = 'student';
 
-    // Uniwersalna funkcja do zapytań (identyczna jak w liście)
+    // Uniwersalna funkcja do zapytań API
     async function apiFetch(url, options = {}) {
         const token = localStorage.getItem("accessToken");
         if (!token) { window.location.href = "/login"; return null; }
@@ -105,21 +108,17 @@
         return text ? JSON.parse(text) : {};
     }
 
-    function logout() {
-        localStorage.removeItem("accessToken"); window.location.href = "/login";
-    }
-
+    function logout() { localStorage.removeItem("accessToken"); window.location.href = "/login"; }
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
     // --- Inicjalizacja ---
     async function init() {
-        if(!projectId) { alert("Brak ID projektu"); window.location.href="/projectList.html"; return; }
-        
+        if(!projectId) { alert("Brak ID projektu"); window.location.href="/projectList(wersjaKrzys)"; return; }
+
         try {
             const user = await apiFetch("/api/users/me");
             currentUserRole = user.role;
             if(currentUserRole === 'prowadzacy' || currentUserRole === 'admin') {
-                document.getElementById('project-actions').classList.remove('hidden');
                 document.getElementById('student-actions').classList.remove('hidden');
             }
         } catch (e) { logout(); return; }
@@ -127,103 +126,76 @@
         await loadProjectDetails();
     }
 
-    // --- PROJEKT LOGIKA ---
+    // --- LOGIKA PROJEKTU (Pobieranie wszystkiego przez /details) ---
     async function loadProjectDetails() {
         try {
+            // Korzystamy z nowego, zintegrowanego endpointu Twojego kolegi
             projectDetails = await apiFetch(`/api/projects/${projectId}/details`);
-
+            console.log("Dane projektu z backendu:", projectDetails);
+            console.log("Ilość zadań w obiekcie:", projectDetails.tasks ? projectDetails.tasks.length : "Brak pola tasks");
             document.getElementById('p-name').innerText = projectDetails.name;
             document.getElementById('p-desc').innerText = projectDetails.description || "Brak opisu";
-            document.getElementById('p-status').innerText = projectDetails.status;
 
-            renderTasks(projectDetails.tasks);
-            renderMembers(projectDetails.members);
+            const statusEl = document.getElementById('p-status');
+            statusEl.innerText = projectDetails.status || 'ACTIVE';
+            statusEl.className = `badge ${projectDetails.status ? projectDetails.status.toLowerCase() : 'active'}`;
 
-        } catch (e) {
-            console.error(e);
-        }
+            // Przekazujemy listy do wyrenderowania
+            renderTasks(projectDetails.tasks || []);
+            renderMembers(projectDetails.members || []);
+
+        } catch(e) { console.error("Nie udało się załadować szczegółów projektu:", e); }
     }
 
-    function renderMembers(members) {
-
-        const list = document.getElementById("students-list");
-
-        if (!members.length) {
-            list.innerHTML = "Brak przypisanych użytkowników.";
-            return;
-        }
-
-        const canRemove =
-            currentUserRole === "admin" ||
-            currentUserRole === "prowadzacy";
-
-        list.innerHTML = members.map(m => `
-        <div class="list-item">
-
-            <span>
-                ${m.firstName} ${m.lastName}
-                (${m.role})
-            </span>
-
-            ${
-            canRemove
-                ? `<button class="btn btn-danger btn-sm"
-                        onclick="removeStudent(${m.id})">
-                        Usuń
-                   </button>`
-                : ""
-        }
-
-        </div>
-    `).join("");
-    }
-
-    async function deleteProject() {
-        if(!confirm("Na pewno usunąć projekt?")) return;
-        try {
-            await apiFetch(`/api/projects/${projectId}`, { method: 'DELETE' });
-            window.location.href = "/projectList.html";
-        } catch(e) { alert("Błąd usuwania"); }
-    }
-
-    function openEditProjectModal() {
-        // Uproszczenie: na potrzeby dema przechodzimy do modala edycji na nowo. 
-        // W idealnym świecie tutaj załadowałbyś pola inputów danymi z `loadProjectDetails` 
-        // Następnie robisz PUT na /api/projects/{projectId}
-        alert("Funkcjonalność podłączania modala z danymi z GET. Zrób na wzór dodawania projektu!");
-    }
+    // --- RENDEROWANIE ZADAŃ ---
     function renderTasks(tasks) {
         const list = document.getElementById("tasks-list");
 
         if (!tasks.length) {
-            list.innerHTML = "Brak zadań.";
+            list.innerHTML = "<div style='padding: 15px;'>Brak zadań w tym projekcie.</div>";
             return;
         }
 
         list.innerHTML = tasks.map(t => `
-        <div class="list-item">
-            <div>
-                <strong>${t.title}</strong> (${t.status})<br>
-                <small>${t.description ?? ""}</small>
+            <div class="list-item">
+                <div class="list-item-content">
+                    <strong>${t.title}</strong>
+                    <span class="badge ${t.status ? t.status.toLowerCase() : 'todo'}">${t.status}</span>
+                    <br><small>${t.description || 'Brak opisu'}</small>
+                </div>
+                <div style="min-width: 120px; text-align: right;">
+                    <button class="btn btn-warning btn-sm" onclick="initEditTask(${t.id})">Edytuj</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteTask(${t.id})">Usuń</button>
+                </div>
             </div>
-
-            <div>
-                <button class="btn btn-warning btn-sm"
-                    onclick="editTask(${t.id}, '${t.title}', '${t.description ?? ""}', '${t.status}')">
-                    Edytuj
-                </button>
-
-                <button class="btn btn-danger btn-sm"
-                    onclick="deleteTask(${t.id})">
-                    Usuń
-                </button>
-            </div>
-        </div>
-    `).join("");
+        `).join("");
     }
-    // --- ZADANIA LOGIKA (Wszyscy) ---
 
+    // --- RENDEROWANIE CZŁONKÓW ZESPOŁU ---
+    function renderMembers(members) {
+        const list = document.getElementById("students-list");
+
+        if (!members.length) {
+            list.innerHTML = "<div style='padding: 15px;'>Brak przypisanych użytkowników.</div>";
+            return;
+        }
+
+        const canRemove = currentUserRole === "admin" || currentUserRole === "prowadzacy";
+
+        list.innerHTML = members.map(m => `
+            <div class="list-item">
+                <div class="list-item-content">
+                    <strong>${m.firstName} ${m.lastName}</strong>
+                    <small>(${m.role})</small>
+                </div>
+                ${canRemove ? `<div><button class="btn btn-danger btn-sm" onclick="removeStudent(${m.id})">Usuń</button></div>` : ''}
+            </div>
+        `).join("");
+    }
+
+    // --- FORMULARZ ZADANIA (DODAWANIE / EDYCJA) ---
     function openTaskModal() {
+        document.getElementById('task-modal-title').innerText = 'Dodaj Zadanie';
         document.getElementById('task-id').value = '';
         document.getElementById('task-title').value = '';
         document.getElementById('task-desc').value = '';
@@ -231,40 +203,52 @@
         document.getElementById('task-modal').classList.remove('hidden');
     }
 
-    function editTask(id, title, desc, status) {
-        document.getElementById('task-id').value = id;
-        document.getElementById('task-title').value = title;
-        document.getElementById('task-desc').value = desc !== 'null' ? desc : '';
-        document.getElementById('task-status').value = status;
+    // Bezpieczne ładowanie danych do edycji z obiektu pobranego z bazy
+    function initEditTask(id) {
+        if(!projectDetails || !projectDetails.tasks) return;
+        const task = projectDetails.tasks.find(t => t.id === id);
+        if(!task) return;
+
+        document.getElementById('task-modal-title').innerText = 'Edytuj Zadanie';
+        document.getElementById('task-id').value = task.id;
+        document.getElementById('task-title').value = task.title;
+        document.getElementById('task-desc').value = task.description || '';
+        document.getElementById('task-status').value = task.status;
         document.getElementById('task-modal').classList.remove('hidden');
     }
 
     async function saveTask() {
         const id = document.getElementById('task-id').value;
         const payload = {
-            projekt_id: projectId, // backend u Ciebie to chyba 'projekt_id' z opisu
-            title: document.getElementById('task-title').value,
-            description: document.getElementById('task-desc').value,
-            status: document.getElementById('task-status').value
-        };
+    project:{
+        id: parseInt(projectId)
+    },
+    title: document.getElementById('task-title').value,
+    description: document.getElementById('task-desc').value,
+    status: document.getElementById('task-status').value
+};
         const method = id ? 'PUT' : 'POST';
-        const url = id ? `/api/tasks/${id}` : `/api/tasks`; 
-        
+        const url = id ? `/api/tasks/${id}` : `/api/tasks`;
+
         try {
             await apiFetch(url, { method: method, body: JSON.stringify(payload) });
             closeModal('task-modal');
-            loadProjectDetails();
-        } catch(e) { alert("Błąd zapisu zadania"); }
+            await loadProjectDetails(); // Przeładowujemy całe dane projektu
+        } catch(e) {
+            console.error(e);
+            alert("Błąd zapisu zadania");
+        }
     }
 
     async function deleteTask(id) {
         if(!confirm("Usunąć to zadanie?")) return;
-        try { await apiFetch(`/api/tasks/${id}`, { method: 'DELETE' }); loadProjectDetails(); }
-        catch(e) { alert("Błąd"); }
+        try {
+            await apiFetch(`/api/tasks/${id}`, { method: 'DELETE' });
+            await loadProjectDetails();
+        } catch(e) { alert("Błąd usuwania"); }
     }
 
-    // --- STUDENCI LOGIKA (Tylko Admin/Prowadzący) ---
-
+    // --- WYSZUKIWANIE I DODAWANIE STUDENTÓW ---
     function openStudentSearchModal() {
         document.getElementById('student-search-results').innerHTML = '';
         document.getElementById('student-search-email').value = '';
@@ -272,14 +256,23 @@
     }
 
     async function searchStudents() {
-        const email = document.getElementById('student-search-email').value;
+        const email = document.getElementById('student-search-email').value.trim();
         try {
             const students = await apiFetch(`/api/users?role=student&search=${encodeURIComponent(email)}`);
             const resBox = document.getElementById('student-search-results');
+
+            if(!students || students.length === 0) {
+                resBox.innerHTML = "<div style='padding:10px;'>Nie znaleziono studentów.</div>";
+                return;
+            }
+
             resBox.innerHTML = students.map(s => `
                 <div class="list-item">
-                    <span>${s.first_name} ${s.last_name} (${s.email})</span>
-                    <button class="btn btn-success btn-sm" onclick="addStudentToProject(${s.id})">Dodaj</button>
+                    <div class="list-item-content">
+                        <strong>${s.first_name || s.firstName || ''} ${s.last_name || s.lastName || ''}</strong>
+                        <small>${s.email}</small>
+                    </div>
+                    <div><button class="btn btn-success btn-sm" onclick="addStudentToProject(${s.id})">Dodaj</button></div>
                 </div>
             `).join("");
         } catch(e) { alert("Błąd wyszukiwania studentów"); }
@@ -287,21 +280,24 @@
 
     async function addStudentToProject(userId) {
         try {
+            // Adres POST z wersji Twojego kolegi
             await apiFetch(`/api/projects/${projectId}/students/${userId}`, { method: 'POST' });
             alert("Dodano studenta!");
-            loadProjectDetails();
+            closeModal('student-modal');
+            await loadProjectDetails();
         } catch(e) { alert("Nie udało się przypisać studenta."); }
     }
 
     async function removeStudent(userId) {
         if(!confirm("Usunąć tego studenta z projektu?")) return;
         try {
+            // Adres DELETE z wersji Twojego kolegi
             await apiFetch(`/api/projects/${projectId}/students/${userId}`, { method: 'DELETE' });
-            loadProjectDetails();
+            await loadProjectDetails();
         } catch(e) { alert("Błąd usuwania studenta."); }
     }
 
-    // Odpal start
+    // Uruchomienie skryptu
     init();
 </script>
 

@@ -1,0 +1,117 @@
+/* style.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+:root {
+    --primary: #4361ee;
+    --primary-hover: #3a56d4;
+    --success: #2ecc71;
+    --danger: #e74c3c;
+    --warning: #f1c40f;
+    --dark: #2b2d42;
+    --light-bg: #f8f9fa;
+    --border: #e9ecef;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f6f9;
+    color: #333;
+}
+
+.topbar {
+    background: var(--dark);
+    color: white;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.topbar h2 { margin: 0; font-size: 1.2rem; }
+
+.root {
+    padding: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.header-section h1, .header-section h2 { margin: 0; }
+
+/* Przyciski */
+.btn {
+    padding: 8px 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s;
+    color: white;
+    font-size: 0.9rem;
+}
+.btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-primary { background: var(--primary); }
+.btn-danger { background: var(--danger); }
+.btn-success { background: var(--success); }
+.btn-warning { background: var(--warning); color: #000; }
+.btn-sm { padding: 5px 10px; font-size: 0.8rem; }
+.logout-btn { background: var(--danger); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+.hidden { display: none !important; }
+
+/* Kontrolki i Formularze */
+.controls { display: flex; gap: 15px; margin-bottom: 20px; }
+.controls input, .controls select, .form-group input, .form-group textarea, .form-group select {
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: inherit;
+    outline: none;
+}
+.controls input:focus, .form-group input:focus { border-color: var(--primary); }
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem; }
+.form-group input, .form-group textarea, .form-group select { width: 100%; box-sizing: border-box; }
+
+/* Tabele */
+.table-container { background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border); }
+th { background: var(--light-bg); font-weight: 600; color: #555; }
+tr.clickable-row { transition: background 0.2s; cursor: pointer; }
+tr.clickable-row:hover { background-color: #f1f3f5; }
+.actions-cell { display: flex; gap: 5px; }
+
+/* Status Badges */
+.badge { padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; }
+.badge.active, .badge.in_progress { background: #d4edda; color: #155724; }
+.badge.inactive, .badge.todo { background: #f8d7da; color: #721c24; }
+.badge.completed, .badge.done { background: #cce5ff; color: #004085; }
+
+/* Scrollowalne listy */
+.grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px; }
+.scrollable-list { max-height: 400px; overflow-y: auto; border: 1px solid var(--border); background: white; border-radius: 8px; }
+.list-item { display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid var(--border); align-items: center; }
+.list-item:last-child { border-bottom: none; }
+.list-item-content strong { display: block; margin-bottom: 5px; color: var(--dark); }
+.list-item-content small { color: #666; }
+
+/* Paginacja */
+.pagination { margin-top: 20px; display: flex; justify-content: center; gap: 5px; }
+
+/* Modal */
+.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+.modal-content { background: white; padding: 30px; border-radius: 10px; width: 450px; max-width: 90%; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
