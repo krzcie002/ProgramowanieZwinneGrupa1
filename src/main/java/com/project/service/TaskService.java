@@ -2,6 +2,7 @@ package com.project.service;
 
 import com.project.dto.TaskDto;
 import com.project.interfaces.ITaskService;
+import com.project.model.Project;
 import com.project.model.Task;
 import com.project.model.TaskStatus;
 import com.project.repository.TaskRepository;
@@ -37,7 +38,7 @@ public class TaskService implements ITaskService {
     @Override
     public void deleteTask(Integer id) {
         Task task = getTaskById(id)
-                .orElseThrow(() -> new RuntimeException("Task not found"));;
+                .orElseThrow(() -> new RuntimeException("Task not found"));
         task.setIsDeleted(true);
         taskRepository.save(task);
     }

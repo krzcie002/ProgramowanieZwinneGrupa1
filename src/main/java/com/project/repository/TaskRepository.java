@@ -8,9 +8,9 @@ import java.util.List;
 
 public interface TaskRepository extends JpaRepository<Task, Integer> {
 
-    List<Task> findByProjectIdAndIsDeletedFalse(Integer project_id);
+    List<Task> findByProjectIdAndIsDeletedFalse(Integer projectId);
 
-    List<Task> findByProjectId(Integer project_id);
+    List<Task> findByProjectId(Integer projectId);
 
     List<Task> findByCreatedById(Integer userId);
 }
