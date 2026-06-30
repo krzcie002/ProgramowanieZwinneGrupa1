@@ -50,6 +50,7 @@ public class ProjectController {
     }
     @GetMapping("/{id}/details")
     public ResponseEntity<ProjectDetailsDto> getProjectDetails(@PathVariable Integer id) {
+
         return ResponseEntity.ok(projectService.getProjectDetails(id));
     }
 }
