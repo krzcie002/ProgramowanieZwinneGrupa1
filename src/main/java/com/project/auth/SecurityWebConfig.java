@@ -37,6 +37,8 @@ public class SecurityWebConfig {
                                 "/js/**",
                                 "/favicon.ico").permitAll()
 
+                        .requestMatchers("/css/**").permitAll()
+                        .requestMatchers("/**/*.ico").permitAll()
 
                         // swagger
                         .requestMatchers(
