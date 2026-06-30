@@ -57,8 +57,8 @@ public class TaskService implements ITaskService {
     }
 
     @Override
-    public List<Task> getTasksByProject(Integer projectId) {
-        return taskRepository.findByProjectIdAndIsDeletedFalse(projectId);
+    public List<Task> getTasksByProject(Integer project_id) {
+        return taskRepository.findByProjectId(project_id);
     }
 
     @Override
