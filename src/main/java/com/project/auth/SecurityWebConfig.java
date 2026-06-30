@@ -61,7 +61,7 @@ public class SecurityWebConfig {
                         .requestMatchers("/api/users/me").authenticated()
 
                         // protected API
-                        .requestMatchers("/api/users/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/users/**").hasRole("admin")
                         .requestMatchers("/api/**").authenticated()
 
                         // pages

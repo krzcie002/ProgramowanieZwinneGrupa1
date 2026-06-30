@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Controller
 public class ProjectPageController {
 
-    @GetMapping("/projectList(wersjaKrzys)")
+    @GetMapping("/projectListKrzys")
     public String projectListKrzys() {
         return "projectListKrzys"; // Spring dopasuje to do pliku projectListKrzys.html
     }
